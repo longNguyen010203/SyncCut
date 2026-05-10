@@ -329,3 +329,37 @@ def test_inspect_cli_fails_on_malformed_input(tmp_path) -> None:
     assert "Error:" in result.output
     assert "timeline is not valid enough to inspect" in result.output
     assert "Traceback" not in result.output
+
+
+def test_export_remotion_cli_succeeds_on_tiny_complete_timeline(tmp_path) -> None:
+    timeline_json = write_tiny_timeline(tmp_path)
+    out = tmp_path / "remotion" / "props.json"
+
+    result = CliRunner().invoke(app, ["export-remotion", str(timeline_json), "--out", str(out)])
+
+    assert result.exit_code == 0
+    assert out.exists()
+    data = json.loads(out.read_text(encoding="utf-8"))
+    assert set(data) == {"metadata", "composition", "sections", "scenes", "assets", "warnings"}
+    assert f"Exported {out}" in result.output
+    assert "scenes: 1" in result.output
+    assert "sections: 1" in result.output
+    assert "fps: 30" in result.output
+    assert "duration_frames: 60" in result.output
+    assert data["metadata"]["duration_frames"] == 60
+    assert data["scenes"][0]["id"] == "scene_001"
+
+
+def test_export_remotion_cli_fails_clearly_on_invalid_timeline(tmp_path) -> None:
+    timeline_json = tmp_path / "timeline.json"
+    timeline_json.write_text(json.dumps({"metadata": {}}), encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        ["export-remotion", str(timeline_json), "--out", str(tmp_path / "props.json")],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "invalid timeline" in result.output
+    assert "Traceback" not in result.output

@@ -5,6 +5,7 @@ from typing import Annotated
 import typer
 
 from synccut.alignment_loader import load_section_assets
+from synccut.remotion_exporter import export_remotion_props_file
 from synccut.scenes_loader import load_scenes
 from synccut.timeline_builder import build_timeline as build_timeline_data
 from synccut.timeline_inspector import build_timeline_overview
@@ -79,6 +80,26 @@ def inspect_timeline_cmd(
         raise typer.Exit(1) from exc
 
     typer.echo(overview, nl=False)
+
+
+@app.command("export-remotion")
+def export_remotion_cmd(
+    timeline_json: Annotated[Path, typer.Argument(help="Path to timeline.json.")],
+    out: Annotated[Path, typer.Option(help="Path to write Remotion props JSON.")],
+) -> None:
+    """Export Remotion-friendly props JSON from timeline.json."""
+    try:
+        props = export_remotion_props_file(timeline_json, out)
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    typer.echo(f"Exported {out}")
+    typer.echo(f"scenes: {props['metadata']['total_scenes']}")
+    typer.echo(f"sections: {props['metadata']['total_sections']}")
+    typer.echo(f"fps: {props['metadata']['fps']}")
+    typer.echo(f"duration_frames: {props['metadata']['duration_frames']}")
+    typer.echo(f"warnings: {len(props['warnings'])}")
 
 
 if __name__ == "__main__":
