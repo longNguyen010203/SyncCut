@@ -1,0 +1,2056 @@
+{
+  "metadata": {
+    "generated_by": "synccut export-remotion",
+    "source_timeline": "timeline.json",
+    "fps": 30,
+    "duration_sec": 752.79,
+    "duration_frames": 22584,
+    "total_scenes": 33,
+    "total_sections": 7
+  },
+  "composition": {
+    "id": "SyncCutVideo",
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "duration_frames": 22584
+  },
+  "sections": [
+    {
+      "section_key": "01_HOOK",
+      "section": "HOOK",
+      "section_order": 1,
+      "start_sec": 0.0,
+      "end_sec": 18.39,
+      "duration_sec": 18.39,
+      "start_frame": 0,
+      "end_frame": 552,
+      "duration_frames": 552,
+      "audio": {
+        "path": "examples/audio/01_HOOK.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/01_HOOK_alignment_tmp.json"
+      }
+    },
+    {
+      "section_key": "02_INTRO",
+      "section": "INTRO",
+      "section_order": 2,
+      "start_sec": 18.39,
+      "end_sec": 77.787,
+      "duration_sec": 59.397,
+      "start_frame": 552,
+      "end_frame": 2334,
+      "duration_frames": 1782,
+      "audio": {
+        "path": "examples/audio/02_INTRO.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/02_INTRO_alignment_tmp.json"
+      }
+    },
+    {
+      "section_key": "03_MECHANISM_1",
+      "section": "MECHANISM 1 \u2014 THE FOUNDRY SINGULARITY",
+      "section_order": 3,
+      "start_sec": 77.787,
+      "end_sec": 161.89,
+      "duration_sec": 84.103,
+      "start_frame": 2334,
+      "end_frame": 4857,
+      "duration_frames": 2523,
+      "audio": {
+        "path": "examples/audio/03_MECHANISM_1.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json"
+      }
+    },
+    {
+      "section_key": "04_MECHANISM_2",
+      "section": "MECHANISM 2 \u2014 THE PHYSICS WALL",
+      "section_order": 4,
+      "start_sec": 161.89,
+      "end_sec": 307.85,
+      "duration_sec": 145.96,
+      "start_frame": 4857,
+      "end_frame": 9236,
+      "duration_frames": 4379,
+      "audio": {
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json"
+      }
+    },
+    {
+      "section_key": "05_MECHANISM_3",
+      "section": "MECHANISM 3 \u2014 THE CUSTOMER TRAP",
+      "section_order": 5,
+      "start_sec": 307.85,
+      "end_sec": 460.08000000000004,
+      "duration_sec": 152.23,
+      "start_frame": 9236,
+      "end_frame": 13802,
+      "duration_frames": 4566,
+      "audio": {
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json"
+      }
+    },
+    {
+      "section_key": "06_MECHANISM_4",
+      "section": "MECHANISM 4 \u2014 THE GEOGRAPHIC CHOKEPOINT",
+      "section_order": 6,
+      "start_sec": 460.08000000000004,
+      "end_sec": 604.043,
+      "duration_sec": 143.963,
+      "start_frame": 13802,
+      "end_frame": 18121,
+      "duration_frames": 4319,
+      "audio": {
+        "path": "examples/audio/06_MECHANISM_4.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json"
+      }
+    },
+    {
+      "section_key": "07_CONCLUSION",
+      "section": "CONCLUSION",
+      "section_order": 7,
+      "start_sec": 604.043,
+      "end_sec": 752.79,
+      "duration_sec": 148.747,
+      "start_frame": 18121,
+      "end_frame": 22584,
+      "duration_frames": 4463,
+      "audio": {
+        "path": "examples/audio/07_CONCLUSION.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json"
+      }
+    }
+  ],
+  "scenes": [
+    {
+      "id": "scene_001",
+      "scene_order": 1,
+      "section": "HOOK",
+      "section_order": 1,
+      "section_key": "01_HOOK",
+      "start_sec": 0.0,
+      "end_sec": 9.137,
+      "duration_sec": 9.137,
+      "local_start_sec": 0.0,
+      "local_end_sec": 9.137,
+      "start_frame": 0,
+      "end_frame": 274,
+      "duration_frames": 274,
+      "visual_type": "AI_VIDEO",
+      "visual": {
+        "type": "AI_VIDEO",
+        "prompt": "Extreme close-up of a silicon wafer rotating slowly under blue cleanroom light. Surface catches light like a mirror. Reflections of engineers in bunny suits move across it.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "Every iPhone in your pocket. Every NVIDIA GPU training AI models. Every F-35 fighter jet guidance system. They all come from the same place.",
+        "paragraphs": [
+          "Every iPhone in your pocket. Every NVIDIA GPU training AI models. Every F-35 fighter jet guidance system.",
+          "They all come from the same place."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/01_HOOK.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/01_HOOK_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:0:0",
+          "sentence:0:1",
+          "sentence:0:2",
+          "sentence:0:3"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_002",
+      "scene_order": 2,
+      "section": "HOOK",
+      "section_order": 1,
+      "section_key": "01_HOOK",
+      "start_sec": 9.346,
+      "end_sec": 13.154,
+      "duration_sec": 3.808,
+      "local_start_sec": 9.346,
+      "local_end_sec": 13.154,
+      "start_frame": 280,
+      "end_frame": 395,
+      "duration_frames": 115,
+      "visual_type": "COMPARISON_CARD",
+      "visual": {
+        "type": "COMPARISON_CARD",
+        "prompt": null,
+        "data": {
+          "headline": null,
+          "left": {
+            "label": "TSMC",
+            "value": "Produces 90%+ of the world's advanced chips"
+          },
+          "right": {
+            "label": "The entire rest of the world",
+            "value": "Less than 10%"
+          },
+          "footer": "Advanced Chip Production"
+        }
+      },
+      "dialogue": {
+        "text": "One company. One island. Ninety percent of everything that matters.",
+        "paragraphs": [
+          "One company. One island. Ninety percent of everything that matters."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/01_HOOK.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/01_HOOK_alignment_tmp.json",
+        "match_method": "paragraph",
+        "matched_units": [
+          "paragraph:1"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_003",
+      "scene_order": 3,
+      "section": "HOOK",
+      "section_order": 1,
+      "section_key": "01_HOOK",
+      "start_sec": 13.328,
+      "end_sec": 18.39,
+      "duration_sec": 5.062000000000001,
+      "local_start_sec": 13.328,
+      "local_end_sec": 18.39,
+      "start_frame": 400,
+      "end_frame": 552,
+      "duration_frames": 152,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Aerial shot of TSMC's Hsinchu Science Park campus at dusk \u2014 massive fabrication halls glowing against dark mountains. Taiwan coastline visible in the distance.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "And almost no one outside the industry knows how it got this way \u2014 or why it cannot be replicated.",
+        "paragraphs": [
+          "And almost no one outside the industry knows how it got this way \u2014 or why it cannot be replicated."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/01_HOOK.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/01_HOOK_alignment_tmp.json",
+        "match_method": "paragraph",
+        "matched_units": [
+          "paragraph:2"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_004",
+      "scene_order": 4,
+      "section": "INTRO",
+      "section_order": 2,
+      "section_key": "02_INTRO",
+      "start_sec": 18.39,
+      "end_sec": 32.287,
+      "duration_sec": 13.896999999999998,
+      "local_start_sec": 0.0,
+      "local_end_sec": 13.897,
+      "start_frame": 552,
+      "end_frame": 969,
+      "duration_frames": 417,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "News montage \u2014 NVIDIA CEO Jensen Huang holding a chip at a conference. Apple's iPhone launch. A military satellite. A self-driving car. Quick cuts, all linked by a single white chip graphic.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "The chip inside nearly every cutting-edge device on Earth \u2014 whether it's a consumer gadget, an artificial intelligence server, or a defense system \u2014 was almost certainly manufactured by TSMC. Not designed by TSMC. Made by TSMC.",
+        "paragraphs": [
+          "The chip inside nearly every cutting-edge device on Earth \u2014 whether it's a consumer gadget, an artificial intelligence server, or a defense system \u2014 was almost certainly manufactured by TSMC.",
+          "Not designed by TSMC. Made by TSMC."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/02_INTRO.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/02_INTRO_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:0:0",
+          "sentence:0:1",
+          "sentence:0:2"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_005",
+      "scene_order": 5,
+      "section": "INTRO",
+      "section_order": 2,
+      "section_key": "02_INTRO",
+      "start_sec": 32.671,
+      "end_sec": 44.791,
+      "duration_sec": 12.119999999999997,
+      "local_start_sec": 14.281,
+      "local_end_sec": 26.401,
+      "start_frame": 980,
+      "end_frame": 1344,
+      "duration_frames": 364,
+      "visual_type": "CHART",
+      "visual": {
+        "type": "CHART",
+        "prompt": null,
+        "data": {
+          "title": "TSMC Foundry Market Share (Advanced Nodes sub-7nm)",
+          "chart_type": "pie",
+          "x_label": null,
+          "y_label": null,
+          "series": [
+            {
+              "name": "Market Share",
+              "points": [
+                {
+                  "x": "TSMC",
+                  "y": 92
+                },
+                {
+                  "x": "Samsung",
+                  "y": 7
+                },
+                {
+                  "x": "All Others",
+                  "y": 1
+                }
+              ]
+            }
+          ],
+          "annotations": [
+            {
+              "x": "General Area",
+              "label": "Source: TrendForce 2024"
+            }
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "At the most advanced nodes \u2014 the chips that define the competitive frontier \u2014 TSMC's market share is not dominant. It is near-total. Samsung holds roughly seven percent. Everyone else divides the remainder.",
+        "paragraphs": [
+          "At the most advanced nodes \u2014 the chips that define the competitive frontier \u2014 TSMC's market share is not dominant.",
+          "It is near-total. Samsung holds roughly seven percent. Everyone else divides the remainder."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/02_INTRO.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/02_INTRO_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:1:0",
+          "sentence:1:1",
+          "sentence:1:2",
+          "sentence:1:3"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_006",
+      "scene_order": 6,
+      "section": "INTRO",
+      "section_order": 2,
+      "section_key": "02_INTRO",
+      "start_sec": 45.174,
+      "end_sec": 67.35,
+      "duration_sec": 22.175999999999995,
+      "local_start_sec": 26.784,
+      "local_end_sec": 48.96,
+      "start_frame": 1355,
+      "end_frame": 2020,
+      "duration_frames": 665,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "A single grain of sand falling into a researcher's open hand. Slow motion. Cut to a gleaming silicon wafer under laboratory light. Text overlay fades in: 'Same material. Different world.'",
+        "data": null
+      },
+      "dialogue": {
+        "text": "The paradox at the center of this story is deceptively simple. The raw material is sand. Silicon dioxide. Abundant, cheap, found on every beach on the planet. And yet the finished product \u2014 a semiconductor chip \u2014 is among the most complex objects human civilization has ever built. TSMC learned how to bridge that gap better than anyone else. And then it made the gap unbridgeable.",
+        "paragraphs": [
+          "The paradox at the center of this story is deceptively simple. The raw material is sand. Silicon dioxide.",
+          "Abundant, cheap, found on every beach on the planet. And yet the finished product \u2014 a semiconductor chip \u2014 is among the most complex objects human civilization has ever built.",
+          "TSMC learned how to bridge that gap better than anyone else. And then it made the gap unbridgeable."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/02_INTRO.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/02_INTRO_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:2:0",
+          "sentence:2:1",
+          "sentence:2:2",
+          "sentence:2:3",
+          "sentence:2:4",
+          "sentence:2:5",
+          "sentence:2:6"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_007",
+      "scene_order": 7,
+      "section": "INTRO",
+      "section_order": 2,
+      "section_key": "02_INTRO",
+      "start_sec": 67.675,
+      "end_sec": 77.787,
+      "duration_sec": 10.112000000000009,
+      "local_start_sec": 49.285,
+      "local_end_sec": 59.397,
+      "start_frame": 2030,
+      "end_frame": 2334,
+      "duration_frames": 304,
+      "visual_type": "TABLE",
+      "visual": {
+        "type": "TABLE",
+        "prompt": null,
+        "data": {
+          "title": "Core mechanisms this video unpacks",
+          "columns": [
+            "Mechanism",
+            "Description"
+          ],
+          "rows": [
+            [
+              "1. The Foundry Singularity",
+              "Why TSMC's business model created an irreversible monopoly"
+            ],
+            [
+              "2. The Physics Wall",
+              "Why manufacturing at atomic scale is harder than rocket science"
+            ],
+            [
+              "3. The Customer Trap",
+              "Why every major chip company is dependent and cannot leave"
+            ],
+            [
+              "4. The Geographic Chokepoint",
+              "Why one island holding this power is a global systemic risk"
+            ]
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "Four mechanisms define how TSMC achieved the unchallengeable position it holds today \u2014 and why replicating it may be impossible within any reasonable timeframe. Let's take them apart.",
+        "paragraphs": [
+          "Four mechanisms define how TSMC achieved the unchallengeable position it holds today \u2014 and why replicating it may be impossible within any reasonable timeframe.",
+          "Let's take them apart."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/02_INTRO.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/02_INTRO_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:3:0",
+          "sentence:3:1"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_008",
+      "scene_order": 8,
+      "section": "MECHANISM 1 \u2014 THE FOUNDRY SINGULARITY",
+      "section_order": 3,
+      "section_key": "03_MECHANISM_1",
+      "start_sec": 77.787,
+      "end_sec": 90.99900000000001,
+      "duration_sec": 13.212000000000003,
+      "local_start_sec": 0.0,
+      "local_end_sec": 13.212,
+      "start_frame": 2334,
+      "end_frame": 2730,
+      "duration_frames": 396,
+      "visual_type": "AI_VIDEO",
+      "visual": {
+        "type": "AI_VIDEO",
+        "prompt": "1987. Black-and-white stylized footage. A Taiwanese government minister and a silver-haired engineer shake hands over a contract. Behind them, empty industrial land. Title card: 'Hsinchu, Taiwan. 1987.'",
+        "data": null
+      },
+      "dialogue": {
+        "text": "In 1987, a former Texas Instruments executive named Morris Chang proposed something that the semiconductor industry thought was a fundamentally broken business model. He wanted to build a company that made chips \u2014 but never designed a single one.",
+        "paragraphs": [
+          "In 1987, a former Texas Instruments executive named Morris Chang proposed something that the semiconductor industry thought was a fundamentally broken business model.",
+          "He wanted to build a company that made chips \u2014 but never designed a single one."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/03_MECHANISM_1.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:0:0",
+          "sentence:0:1"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_009",
+      "scene_order": 9,
+      "section": "MECHANISM 1 \u2014 THE FOUNDRY SINGULARITY",
+      "section_order": 3,
+      "section_key": "03_MECHANISM_1",
+      "start_sec": 91.382,
+      "end_sec": 106.522,
+      "duration_sec": 15.14,
+      "local_start_sec": 13.595,
+      "local_end_sec": 28.735,
+      "start_frame": 2741,
+      "end_frame": 3196,
+      "duration_frames": 455,
+      "visual_type": "COMPARISON_CARD",
+      "visual": {
+        "type": "COMPARISON_CARD",
+        "prompt": null,
+        "data": {
+          "headline": "Business Models",
+          "left": {
+            "label": "Traditional model (Intel, 1987)",
+            "value": "Design your own chips. Build your own fabs. Sell your own products."
+          },
+          "right": {
+            "label": "Morris Chang's idea",
+            "value": "Build fabs only. Make chips for anyone. Own no designs. Compete with no customers."
+          },
+          "footer": "Vertical Integration vs. Pure-play Foundry"
+        }
+      },
+      "dialogue": {
+        "text": "At the time, every serious chip company was vertically integrated. They designed, manufactured, and sold their own products. Chang's model \u2014 the pure-play foundry \u2014 was considered commercially nonsensical. Why would a manufacturer have no products of its own?",
+        "paragraphs": [
+          "At the time, every serious chip company was vertically integrated. They designed, manufactured, and sold their own products.",
+          "Chang's model \u2014 the pure-play foundry \u2014 was considered commercially nonsensical.",
+          "Why would a manufacturer have no products of its own?"
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/03_MECHANISM_1.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:1:0",
+          "sentence:1:1",
+          "sentence:1:2",
+          "sentence:1:3"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_010",
+      "scene_order": 10,
+      "section": "MECHANISM 1 \u2014 THE FOUNDRY SINGULARITY",
+      "section_order": 3,
+      "section_key": "03_MECHANISM_1",
+      "start_sec": 107.125,
+      "end_sec": 130.693,
+      "duration_sec": 23.568000000000012,
+      "local_start_sec": 29.338,
+      "local_end_sec": 52.906,
+      "start_frame": 3214,
+      "end_frame": 3921,
+      "duration_frames": 707,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Close-up of a whiteboard filled with circuit diagrams. A hand with a marker draws a line separating 'Design' from 'Manufacturing.' The camera pulls back to show a modern chip design office, engineers working at CAD stations.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "What Chang understood \u2014 and what the rest of the industry missed \u2014 was that the economics of chip manufacturing were about to diverge violently from the economics of chip design. Building a cutting-edge fab was getting exponentially more expensive. Designing chips was becoming something startups could do. The industry needed a divorce between the two activities. TSMC was the divorce lawyer \u2014 and it took a fee from everyone.",
+        "paragraphs": [
+          "What Chang understood \u2014 and what the rest of the industry missed \u2014 was that the economics of chip manufacturing were about to diverge violently from the economics of chip design.",
+          "Building a cutting-edge fab was getting exponentially more expensive. Designing chips was becoming something startups could do.",
+          "The industry needed a divorce between the two activities. TSMC was the divorce lawyer \u2014 and it took a fee from everyone."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/03_MECHANISM_1.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:2:0",
+          "sentence:2:1",
+          "sentence:2:2",
+          "sentence:2:3",
+          "sentence:2:4"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_011",
+      "scene_order": 11,
+      "section": "MECHANISM 1 \u2014 THE FOUNDRY SINGULARITY",
+      "section_order": 3,
+      "section_key": "03_MECHANISM_1",
+      "start_sec": 131.07600000000002,
+      "end_sec": 144.869,
+      "duration_sec": 13.792999999999978,
+      "local_start_sec": 53.289,
+      "local_end_sec": 67.082,
+      "start_frame": 3932,
+      "end_frame": 4346,
+      "duration_frames": 414,
+      "visual_type": "TIMELINE",
+      "visual": {
+        "type": "TIMELINE",
+        "prompt": null,
+        "data": {
+          "title": "TSMC's rise",
+          "events": [
+            {
+              "date": "1987",
+              "label": "TSMC founded with Taiwanese government backing"
+            },
+            {
+              "date": "1994",
+              "label": "First major Apple production win"
+            },
+            {
+              "date": "2001",
+              "label": "Dot-com crash destroys integrated rivals, TSMC gains share"
+            },
+            {
+              "date": "2010",
+              "label": "Takes NVIDIA, Qualcomm as anchor customers"
+            },
+            {
+              "date": "2020",
+              "label": "Pulls ahead of Intel at 5nm"
+            },
+            {
+              "date": "2022",
+              "label": "Mass 3nm production"
+            },
+            {
+              "date": "2024",
+              "label": "N2 (2nm) enters risk production"
+            }
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "The model worked because every time chip complexity increased, integrated companies had to choose: invest billions more in manufacturing, or focus on design. Most chose design. And when they abandoned their fabs, there was only one place left to go.",
+        "paragraphs": [
+          "The model worked because every time chip complexity increased, integrated companies had to choose: invest billions more in manufacturing, or focus on design.",
+          "Most chose design. And when they abandoned their fabs, there was only one place left to go."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/03_MECHANISM_1.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:3:0",
+          "sentence:3:1",
+          "sentence:3:2"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_012",
+      "scene_order": 12,
+      "section": "MECHANISM 1 \u2014 THE FOUNDRY SINGULARITY",
+      "section_order": 3,
+      "section_key": "03_MECHANISM_1",
+      "start_sec": 145.113,
+      "end_sec": 161.89,
+      "duration_sec": 16.776999999999987,
+      "local_start_sec": 67.326,
+      "local_end_sec": 84.103,
+      "start_frame": 4353,
+      "end_frame": 4857,
+      "duration_frames": 504,
+      "visual_type": "CHART",
+      "visual": {
+        "type": "CHART",
+        "prompt": null,
+        "data": {
+          "title": "Global Foundry Revenue ($B)",
+          "chart_type": "line",
+          "x_label": "Year",
+          "y_label": "Revenue ($B)",
+          "series": [
+            {
+              "name": "TSMC Revenue",
+              "points": [
+                {
+                  "x": "2010",
+                  "y": 13.3
+                },
+                {
+                  "x": "2015",
+                  "y": 26.9
+                },
+                {
+                  "x": "2020",
+                  "y": 47.8
+                },
+                {
+                  "x": "2022",
+                  "y": 75.9
+                },
+                {
+                  "x": "2024E",
+                  "y": 93
+                }
+              ]
+            }
+          ],
+          "annotations": [
+            {
+              "x": "General Area",
+              "label": "Note: Compound growth ~10% per year for 15 years"
+            }
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "TSMC's revenue has grown from thirteen billion dollars in 2010 to roughly ninety-three billion in 2024. That is not just growth. That is the systematic absorption of an entire industry's manufacturing function. But scale alone doesn't explain the moat. The real barrier isn't money. It's physics.",
+        "paragraphs": [
+          "TSMC's revenue has grown from thirteen billion dollars in 2010 to roughly ninety-three billion in 2024. That is not just growth.",
+          "That is the systematic absorption of an entire industry's manufacturing function.",
+          "But scale alone doesn't explain the moat. The real barrier isn't money. It's physics."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/03_MECHANISM_1.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:4:0",
+          "sentence:4:1",
+          "sentence:4:2",
+          "sentence:5:0",
+          "sentence:5:1",
+          "sentence:5:2"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_013",
+      "scene_order": 13,
+      "section": "MECHANISM 2 \u2014 THE PHYSICS WALL",
+      "section_order": 4,
+      "section_key": "04_MECHANISM_2",
+      "start_sec": 161.89,
+      "end_sec": 180.652,
+      "duration_sec": 18.762,
+      "local_start_sec": 0.0,
+      "local_end_sec": 18.762,
+      "start_frame": 4857,
+      "end_frame": 5420,
+      "duration_frames": 563,
+      "visual_type": "AI_VIDEO",
+      "visual": {
+        "type": "AI_VIDEO",
+        "prompt": "Abstract visualization \u2014 a transistor shrinking from visible scale to nanometer scale. Human hair cross-section appears as comparison. Numbers count down: 10nm, 7nm, 5nm, 3nm, 2nm. The final number glows against black.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "A human hair is roughly eighty thousand nanometers wide. TSMC's current leading-edge chips are manufactured at three nanometers. Its next generation is two nanometers. At that scale, the features being etched into silicon are approaching the width of individual atoms. This is not an engineering challenge. It is a physics challenge.",
+        "paragraphs": [
+          "A human hair is roughly eighty thousand nanometers wide. TSMC's current leading-edge chips are manufactured at three nanometers.",
+          "Its next generation is two nanometers. At that scale, the features being etched into silicon are approaching the width of individual atoms.",
+          "This is not an engineering challenge. It is a physics challenge."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:0:0",
+          "sentence:0:1",
+          "sentence:0:2",
+          "sentence:0:3",
+          "sentence:0:4",
+          "sentence:0:5"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_014",
+      "scene_order": 14,
+      "section": "MECHANISM 2 \u2014 THE PHYSICS WALL",
+      "section_order": 4,
+      "section_key": "04_MECHANISM_2",
+      "start_sec": 180.826,
+      "end_sec": 200.76,
+      "duration_sec": 19.933999999999997,
+      "local_start_sec": 18.936,
+      "local_end_sec": 38.87,
+      "start_frame": 5425,
+      "end_frame": 6023,
+      "duration_frames": 598,
+      "visual_type": "TABLE",
+      "visual": {
+        "type": "TABLE",
+        "prompt": null,
+        "data": {
+          "title": "What manufacturing nodes actually mean",
+          "columns": [
+            "Metric",
+            "Value"
+          ],
+          "rows": [
+            [
+              "Node",
+              "3nm"
+            ],
+            [
+              "Transistors per chip",
+              "6B+ (Apple A17)"
+            ],
+            [
+              "Transistor width",
+              "~12 atoms"
+            ],
+            [
+              "Energy per operation",
+              "~60% less than 7nm"
+            ],
+            [
+              "Performance gain vs. prior gen",
+              "~35%"
+            ],
+            [
+              "Cost per wafer",
+              "~$20,000+"
+            ]
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "The Apple A17 Pro chip in the iPhone 15 contains more than six billion transistors. Each one is roughly twelve atoms wide. Coordinating the placement of six billion structures at atomic precision, across a wafer the size of a dinner plate, at production volumes of millions per month \u2014 this is the most precise manufacturing process in human history.",
+        "paragraphs": [
+          "The Apple A17 Pro chip in the iPhone 15 contains more than six billion transistors.",
+          "Each one is roughly twelve atoms wide. Coordinating the placement of six billion structures at atomic precision, across a wafer the size of a dinner plate, at production volumes of millions per month \u2014 this is the most precise manufacturing process in human history."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:1:0",
+          "sentence:1:1",
+          "sentence:1:2"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_015",
+      "scene_order": 15,
+      "section": "MECHANISM 2 \u2014 THE PHYSICS WALL",
+      "section_order": 4,
+      "section_key": "04_MECHANISM_2",
+      "start_sec": 201.08499999999998,
+      "end_sec": 223.10999999999999,
+      "duration_sec": 22.025000000000006,
+      "local_start_sec": 39.195,
+      "local_end_sec": 61.22,
+      "start_frame": 6033,
+      "end_frame": 6693,
+      "duration_frames": 660,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Interior of a semiconductor cleanroom. Engineers in full bunny suits work at machines the size of cars. Everything is white. The air is ten times cleaner than a hospital operating room. Text overlay: 'Class 1 Cleanroom. Fewer than 1 particle per cubic foot of air.'",
+        "data": null
+      },
+      "dialogue": {
+        "text": "The facilities themselves are extraordinary. TSMC's fabs are among the cleanest environments on Earth. A single particle of dust, smaller than what the human eye can see, landing on a wafer during production can destroy an entire chip. The air inside is filtered to eliminate virtually all contaminants. The machines that perform the etching cost more than commercial aircraft.",
+        "paragraphs": [
+          "The facilities themselves are extraordinary. TSMC's fabs are among the cleanest environments on Earth.",
+          "A single particle of dust, smaller than what the human eye can see, landing on a wafer during production can destroy an entire chip.",
+          "The air inside is filtered to eliminate virtually all contaminants.",
+          "The machines that perform the etching cost more than commercial aircraft."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:2:0",
+          "sentence:2:1",
+          "sentence:2:2",
+          "sentence:2:3",
+          "sentence:2:4"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_016",
+      "scene_order": 16,
+      "section": "MECHANISM 2 \u2014 THE PHYSICS WALL",
+      "section_order": 4,
+      "section_key": "04_MECHANISM_2",
+      "start_sec": 223.551,
+      "end_sec": 245.95799999999997,
+      "duration_sec": 22.406999999999982,
+      "local_start_sec": 61.661,
+      "local_end_sec": 84.068,
+      "start_frame": 6707,
+      "end_frame": 7379,
+      "duration_frames": 672,
+      "visual_type": "COMPARISON_CARD",
+      "visual": {
+        "type": "COMPARISON_CARD",
+        "prompt": null,
+        "data": {
+          "headline": "Scale of Complexity",
+          "left": {
+            "label": "An ASML EUV lithography machine",
+            "value": "Price: $350M+ each | Weight: 180 tons | Precision: Light wavelength of 13.5nm | Requires: 100,000+ components from 5,000+ suppliers"
+          },
+          "right": {
+            "label": "A Boeing 737 MAX",
+            "value": "Price: ~$120M | Weight: 80 tons"
+          },
+          "footer": "EUV Machine vs. Commercial Aircraft"
+        }
+      },
+      "dialogue": {
+        "text": "The single most critical piece of equipment is a machine built by a Dutch company called ASML. The Extreme Ultraviolet lithography machine \u2014 EUV \u2014 costs over three hundred and fifty million dollars per unit. It weighs a hundred and eighty tons. It requires components from more than five thousand suppliers across the world. And TSMC operates more of them than any other company on Earth.",
+        "paragraphs": [
+          "The single most critical piece of equipment is a machine built by a Dutch company called ASML.",
+          "The Extreme Ultraviolet lithography machine \u2014 EUV \u2014 costs over three hundred and fifty million dollars per unit.",
+          "It weighs a hundred and eighty tons. It requires components from more than five thousand suppliers across the world.",
+          "And TSMC operates more of them than any other company on Earth."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:3:0",
+          "sentence:3:1",
+          "sentence:3:2",
+          "sentence:3:3",
+          "sentence:3:4"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_017",
+      "scene_order": 17,
+      "section": "MECHANISM 2 \u2014 THE PHYSICS WALL",
+      "section_order": 4,
+      "section_key": "04_MECHANISM_2",
+      "start_sec": 246.202,
+      "end_sec": 276.202,
+      "duration_sec": 30.0,
+      "local_start_sec": 84.312,
+      "local_end_sec": 114.312,
+      "start_frame": 7386,
+      "end_frame": 8286,
+      "duration_frames": 900,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Animation of extreme ultraviolet light (13.5nm wavelength) pulsing in a vacuum chamber, bouncing off mirrored surfaces, striking a tin droplet to generate plasma, then projecting a circuit pattern onto a silicon wafer. Scientific but visually striking.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "The EUV process works by firing a laser at a tiny droplet of molten tin, fifty thousand times per second, generating a plasma that emits extreme ultraviolet light. That light is then bounced off a series of mirrors polished to atomic flatness \u2014 mirrors that, if scaled to the size of Germany, would have surface irregularities of less than a millimeter \u2014 and projected through a circuit pattern onto the wafer. This happens billions of times to build a single chip layer. A modern chip has dozens of layers.",
+        "paragraphs": [
+          "The EUV process works by firing a laser at a tiny droplet of molten tin, fifty thousand times per second, generating a plasma that emits extreme ultraviolet light.",
+          "That light is then bounced off a series of mirrors polished to atomic flatness \u2014 mirrors that, if scaled to the size of Germany, would have surface irregularities of less than a millimeter \u2014 and projected through a circuit pattern onto the wafer.",
+          "This happens billions of times to build a single chip layer. A modern chip has dozens of layers."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:4:0",
+          "sentence:4:1",
+          "sentence:4:2",
+          "sentence:4:3"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_018",
+      "scene_order": 18,
+      "section": "MECHANISM 2 \u2014 THE PHYSICS WALL",
+      "section_order": 4,
+      "section_key": "04_MECHANISM_2",
+      "start_sec": 276.376,
+      "end_sec": 307.85,
+      "duration_sec": 31.474000000000046,
+      "local_start_sec": 114.486,
+      "local_end_sec": 145.96,
+      "start_frame": 8291,
+      "end_frame": 9236,
+      "duration_frames": 945,
+      "visual_type": "CHART",
+      "visual": {
+        "type": "CHART",
+        "prompt": null,
+        "data": {
+          "title": "Fab Construction Cost Over Time ($B)",
+          "chart_type": "line",
+          "x_label": "Year",
+          "y_label": "Cost ($B)",
+          "series": [
+            {
+              "name": "Construction Cost",
+              "points": [
+                {
+                  "x": "1995",
+                  "y": 1
+                },
+                {
+                  "x": "2000",
+                  "y": 3
+                },
+                {
+                  "x": "2010",
+                  "y": 7
+                },
+                {
+                  "x": "2015",
+                  "y": 10
+                },
+                {
+                  "x": "2020",
+                  "y": 15
+                },
+                {
+                  "x": "2024",
+                  "y": 22.5
+                }
+              ]
+            }
+          ],
+          "annotations": [
+            {
+              "x": "General Area",
+              "label": "Note: Does not include tooling, ramp-up, yield development"
+            }
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "And the cost of building a leading-edge fab has followed an exponential curve. A state-of-the-art facility today costs twenty to twenty-five billion dollars before you manufacture a single commercial chip. That is before the equipment inside, before the workforce training, before the years of yield development required to make production economically viable. So we have an industry where you need twenty billion dollars and decades of institutional knowledge just to enter the race. That creates a different kind of problem \u2014 not for TSMC, but for everyone who needs what TSMC makes.",
+        "paragraphs": [
+          "And the cost of building a leading-edge fab has followed an exponential curve.",
+          "A state-of-the-art facility today costs twenty to twenty-five billion dollars before you manufacture a single commercial chip.",
+          "That is before the equipment inside, before the workforce training, before the years of yield development required to make production economically viable.",
+          "So we have an industry where you need twenty billion dollars and decades of institutional knowledge just to enter the race.",
+          "That creates a different kind of problem \u2014 not for TSMC, but for everyone who needs what TSMC makes."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:5:0",
+          "sentence:5:1",
+          "sentence:5:2",
+          "sentence:6:0",
+          "sentence:6:1"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_019",
+      "scene_order": 19,
+      "section": "MECHANISM 3 \u2014 THE CUSTOMER TRAP",
+      "section_order": 5,
+      "section_key": "05_MECHANISM_3",
+      "start_sec": 307.85,
+      "end_sec": 328.132,
+      "duration_sec": 20.281999999999982,
+      "local_start_sec": 0.0,
+      "local_end_sec": 20.282,
+      "start_frame": 9236,
+      "end_frame": 9844,
+      "duration_frames": 608,
+      "visual_type": "SHARE_BREAKDOWN",
+      "visual": {
+        "type": "SHARE_BREAKDOWN",
+        "prompt": null,
+        "data": {
+          "title": "TSMC's Top Customer Concentration 2024",
+          "unit": "%",
+          "items": [
+            {
+              "label": "Apple",
+              "value": 25
+            },
+            {
+              "label": "NVIDIA",
+              "value": 11
+            },
+            {
+              "label": "AMD",
+              "value": 8
+            },
+            {
+              "label": "Qualcomm",
+              "value": 7
+            },
+            {
+              "label": "Broadcom",
+              "value": 6
+            },
+            {
+              "label": "MediaTek",
+              "value": 6
+            },
+            {
+              "label": "All Others",
+              "value": 37
+            }
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "Look at TSMC's customer list and you are looking at the most powerful technology companies on Earth. Apple. NVIDIA. AMD. Qualcomm. Broadcom. These are trillion-dollar companies \u2014 and every single one of them depends on TSMC for their most advanced chips. This is not a vendor relationship. This is structural dependence.",
+        "paragraphs": [
+          "Look at TSMC's customer list and you are looking at the most powerful technology companies on Earth. Apple. NVIDIA. AMD.",
+          "Qualcomm. Broadcom. These are trillion-dollar companies \u2014 and every single one of them depends on TSMC for their most advanced chips.",
+          "This is not a vendor relationship. This is structural dependence."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:0:0",
+          "sentence:0:1",
+          "sentence:0:2",
+          "sentence:0:3",
+          "sentence:0:4",
+          "sentence:0:5",
+          "sentence:0:6",
+          "sentence:0:7",
+          "sentence:0:8"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_020",
+      "scene_order": 20,
+      "section": "MECHANISM 3 \u2014 THE CUSTOMER TRAP",
+      "section_order": 5,
+      "section_key": "05_MECHANISM_3",
+      "start_sec": 328.457,
+      "end_sec": 353.326,
+      "duration_sec": 24.869000000000028,
+      "local_start_sec": 20.607,
+      "local_end_sec": 45.476,
+      "start_frame": 9854,
+      "end_frame": 10600,
+      "duration_frames": 746,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Quick cuts \u2014 Jensen Huang presenting an H100 GPU. Tim Cook introducing an iPhone. AMD's Lisa Su at a conference. Each cut freezes and fades to grayscale. Text overlay on each: 'Manufactured by TSMC.'",
+        "data": null
+      },
+      "dialogue": {
+        "text": "NVIDIA's H100 GPU \u2014 the chip powering the global AI gold rush \u2014 is made by TSMC. Apple's A-series processors \u2014 the engine of iPhone's performance advantage \u2014 are made exclusively by TSMC. AMD's rise over the last five years, taking market share from Intel in both consumer and data center chips, was built on TSMC's manufacturing. Without TSMC, none of it exists.",
+        "paragraphs": [
+          "NVIDIA's H100 GPU \u2014 the chip powering the global AI gold rush \u2014 is made by TSMC.",
+          "Apple's A-series processors \u2014 the engine of iPhone's performance advantage \u2014 are made exclusively by TSMC.",
+          "AMD's rise over the last five years, taking market share from Intel in both consumer and data center chips, was built on TSMC's manufacturing.",
+          "Without TSMC, none of it exists."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:1:0",
+          "sentence:1:1",
+          "sentence:1:2",
+          "sentence:1:3"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_021",
+      "scene_order": 21,
+      "section": "MECHANISM 3 \u2014 THE CUSTOMER TRAP",
+      "section_order": 5,
+      "section_key": "05_MECHANISM_3",
+      "start_sec": 353.41900000000004,
+      "end_sec": 375.269,
+      "duration_sec": 21.849999999999966,
+      "local_start_sec": 45.569,
+      "local_end_sec": 67.419,
+      "start_frame": 10603,
+      "end_frame": 11258,
+      "duration_frames": 655,
+      "visual_type": "COMPARISON_CARD",
+      "visual": {
+        "type": "COMPARISON_CARD",
+        "prompt": null,
+        "data": {
+          "headline": "Competing Strategies",
+          "left": {
+            "label": "Intel in 2024",
+            "value": "Has own fabs (IDM model). Lost leading-edge to TSMC by 2020. Still behind at advanced nodes. Own foundry service losing money."
+          },
+          "right": {
+            "label": "Apple in 2024",
+            "value": "Fabless. Designs A-series + M-series in-house. Relies entirely on TSMC. Pays premium willingly."
+          },
+          "footer": "Integrated Device Manufacturer vs. Fabless"
+        }
+      },
+      "dialogue": {
+        "text": "Intel tried to maintain the integrated model \u2014 owning its own fabs. It fell behind TSMC by at least a full generation at the leading edge, and is spending billions trying to close a gap that widens each year. Apple took the opposite approach: it designs brilliant chips and lets TSMC make them. Apple's margins are higher. Its chips are faster. The fabless model, executed well, wins.",
+        "paragraphs": [
+          "Intel tried to maintain the integrated model \u2014 owning its own fabs.",
+          "It fell behind TSMC by at least a full generation at the leading edge, and is spending billions trying to close a gap that widens each year.",
+          "Apple took the opposite approach: it designs brilliant chips and lets TSMC make them. Apple's margins are higher.",
+          "Its chips are faster. The fabless model, executed well, wins."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:2:0",
+          "sentence:2:1",
+          "sentence:2:2",
+          "sentence:2:3",
+          "sentence:2:4",
+          "sentence:2:5"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_022",
+      "scene_order": 22,
+      "section": "MECHANISM 3 \u2014 THE CUSTOMER TRAP",
+      "section_order": 5,
+      "section_key": "05_MECHANISM_3",
+      "start_sec": 375.31500000000005,
+      "end_sec": 400.462,
+      "duration_sec": 25.146999999999935,
+      "local_start_sec": 67.465,
+      "local_end_sec": 92.612,
+      "start_frame": 11259,
+      "end_frame": 12014,
+      "duration_frames": 755,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Animation: Multiple company logos (Apple, NVIDIA, Qualcomm, AMD, Google, Tesla) converging on a single central point labeled 'TSMC.' Like a galaxy of planets orbiting one star. Slowly zoom into the center.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "The dependency runs deeper than a supply contract. When a company like Apple designs a chip for TSMC's three-nanometer process, its engineers optimize every transistor, every power rail, every thermal characteristic for TSMC's specific process design kit. Switching to a different manufacturer \u2014 even if one existed at the same level \u2014 would require redesigning the chip from scratch. The switching cost is not financial. It is measured in years.",
+        "paragraphs": [
+          "The dependency runs deeper than a supply contract. When a company like Apple designs a chip for TSMC's three-nanometer process, its engineers optimize every transistor, every power rail, every thermal characteristic for TSMC's specific process design kit.",
+          "Switching to a different manufacturer \u2014 even if one existed at the same level \u2014 would require redesigning the chip from scratch.",
+          "The switching cost is not financial. It is measured in years."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:3:0",
+          "sentence:3:1",
+          "sentence:3:2",
+          "sentence:3:3",
+          "sentence:3:4"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_023",
+      "scene_order": 23,
+      "section": "MECHANISM 3 \u2014 THE CUSTOMER TRAP",
+      "section_order": 5,
+      "section_key": "05_MECHANISM_3",
+      "start_sec": 400.497,
+      "end_sec": 423.485,
+      "duration_sec": 22.988,
+      "local_start_sec": 92.647,
+      "local_end_sec": 115.635,
+      "start_frame": 12015,
+      "end_frame": 12705,
+      "duration_frames": 690,
+      "visual_type": "TABLE",
+      "visual": {
+        "type": "TABLE",
+        "prompt": null,
+        "data": {
+          "title": "Estimated switching costs for a top TSMC customer",
+          "columns": [
+            "Factor",
+            "Impact"
+          ],
+          "rows": [
+            [
+              "New chip tape-out cost",
+              "$500M\u2013$1B+ (at leading edge)"
+            ],
+            [
+              "Time to redesign for new process",
+              "2\u20134 years"
+            ],
+            [
+              "Yield ramp risk at new foundry",
+              "18\u201336 months"
+            ],
+            [
+              "Revenue at risk during transition",
+              "$5B\u2013$20B+"
+            ],
+            [
+              "Historical precedent for switching",
+              "None at scale"
+            ]
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "A leading-edge chip tape-out \u2014 the final design submission before manufacturing \u2014 costs between five hundred million and over a billion dollars at the most advanced nodes. Redesigning for a different manufacturer's process adds years of engineering time and hundreds of millions more. No company has ever successfully moved high-volume leading-edge production away from TSMC. The trap is that the more advanced the chip, the deeper the lock-in.",
+        "paragraphs": [
+          "A leading-edge chip tape-out \u2014 the final design submission before manufacturing \u2014 costs between five hundred million and over a billion dollars at the most advanced nodes.",
+          "Redesigning for a different manufacturer's process adds years of engineering time and hundreds of millions more.",
+          "No company has ever successfully moved high-volume leading-edge production away from TSMC.",
+          "The trap is that the more advanced the chip, the deeper the lock-in."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:4:0",
+          "sentence:4:1",
+          "sentence:4:2",
+          "sentence:4:3"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_024",
+      "scene_order": 24,
+      "section": "MECHANISM 3 \u2014 THE CUSTOMER TRAP",
+      "section_order": 5,
+      "section_key": "05_MECHANISM_3",
+      "start_sec": 423.636,
+      "end_sec": 460.08000000000004,
+      "duration_sec": 36.44400000000002,
+      "local_start_sec": 115.786,
+      "local_end_sec": 152.23,
+      "start_frame": 12709,
+      "end_frame": 13802,
+      "duration_frames": 1093,
+      "visual_type": "CHART",
+      "visual": {
+        "type": "CHART",
+        "prompt": null,
+        "data": {
+          "title": "TSMC Gross Margin %",
+          "chart_type": "line",
+          "x_label": "Year",
+          "y_label": "Gross Margin (%)",
+          "series": [
+            {
+              "name": "Gross Margin",
+              "points": [
+                {
+                  "x": "2018",
+                  "y": 48
+                },
+                {
+                  "x": "2019",
+                  "y": 46
+                },
+                {
+                  "x": "2020",
+                  "y": 53
+                },
+                {
+                  "x": "2021",
+                  "y": 52
+                },
+                {
+                  "x": "2022",
+                  "y": 59
+                },
+                {
+                  "x": "2023",
+                  "y": 55
+                },
+                {
+                  "x": "2024E",
+                  "y": 54
+                }
+              ]
+            }
+          ],
+          "annotations": [
+            {
+              "x": "General Area",
+              "label": "Note: Consistent premium pricing despite being a contract manufacturer"
+            }
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "This structural power shows up directly in TSMC's financials. A contract manufacturer \u2014 a company that makes things for other companies \u2014 should, in a competitive market, operate on thin margins. TSMC's gross margin runs at fifty to sixty percent. That is closer to luxury software economics than industrial manufacturing. It is the margin profile of a company with no real competition. But here is where the story becomes something larger than one company's success. Because when a single facility holds this much power, geography becomes a strategic variable \u2014 for governments, for militaries, and for the global economic order.",
+        "paragraphs": [
+          "This structural power shows up directly in TSMC's financials. A contract manufacturer \u2014 a company that makes things for other companies \u2014 should, in a competitive market, operate on thin margins.",
+          "TSMC's gross margin runs at fifty to sixty percent. That is closer to luxury software economics than industrial manufacturing.",
+          "It is the margin profile of a company with no real competition.",
+          "But here is where the story becomes something larger than one company's success.",
+          "Because when a single facility holds this much power, geography becomes a strategic variable \u2014 for governments, for militaries, and for the global economic order."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:5:0",
+          "sentence:5:1",
+          "sentence:5:2",
+          "sentence:5:3",
+          "sentence:5:4",
+          "sentence:6:0",
+          "sentence:6:1"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_025",
+      "scene_order": 25,
+      "section": "MECHANISM 4 \u2014 THE GEOGRAPHIC CHOKEPOINT",
+      "section_order": 6,
+      "section_key": "06_MECHANISM_4",
+      "start_sec": 460.08000000000004,
+      "end_sec": 477.66900000000004,
+      "duration_sec": 17.589,
+      "local_start_sec": 0.0,
+      "local_end_sec": 17.589,
+      "start_frame": 13802,
+      "end_frame": 14330,
+      "duration_frames": 528,
+      "visual_type": "AI_VIDEO",
+      "visual": {
+        "type": "AI_VIDEO",
+        "prompt": "Satellite view of Taiwan \u2014 island surrounded by ocean. Slow zoom. The Taiwan Strait appears. Warships appear on the Chinese side in a stylized graphic. The island glows with a soft blue light, like a data center seen from space.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "Everything we've described \u2014 ninety percent of advanced chip production, three hundred and fifty million dollar machines, trillion-dollar customer dependencies \u2014 is physically located on an island one hundred and sixty kilometers from mainland China. In a region that is, by any geopolitical measure, one of the world's most volatile.",
+        "paragraphs": [
+          "Everything we've described \u2014 ninety percent of advanced chip production, three hundred and fifty million dollar machines, trillion-dollar customer dependencies \u2014 is physically located on an island one hundred and sixty kilometers from mainland China.",
+          "In a region that is, by any geopolitical measure, one of the world's most volatile."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/06_MECHANISM_4.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:0:0",
+          "sentence:0:1"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_026",
+      "scene_order": 26,
+      "section": "MECHANISM 4 \u2014 THE GEOGRAPHIC CHOKEPOINT",
+      "section_order": 6,
+      "section_key": "06_MECHANISM_4",
+      "start_sec": 477.843,
+      "end_sec": 507.1700000000001,
+      "duration_sec": 29.327000000000055,
+      "local_start_sec": 17.763,
+      "local_end_sec": 47.09,
+      "start_frame": 14335,
+      "end_frame": 15215,
+      "duration_frames": 880,
+      "visual_type": "COMPARISON_CARD",
+      "visual": {
+        "type": "COMPARISON_CARD",
+        "prompt": null,
+        "data": {
+          "headline": "Geographic Distribution",
+          "left": {
+            "label": "TSMC Taiwan fabs",
+            "value": "Produces ~90% of sub-5nm chips globally. Cannot be moved. Took 35 years to build."
+          },
+          "right": {
+            "label": "TSMC Arizona fabs (planned)",
+            "value": "2nm production target: 2028. Cost: $65B committed. Capacity: ~10-15% of Taiwan at scale."
+          },
+          "footer": "Taiwan vs. Arizona Capacity"
+        }
+      },
+      "dialogue": {
+        "text": "The United States has understood this risk. The CHIPS and Science Act of 2022 allocated fifty-two billion dollars in subsidies to bring advanced semiconductor production to American soil. TSMC responded by committing sixty-five billion dollars to three fabs in Arizona. But even with that investment fully online by 2030, the Arizona facilities are projected to represent roughly ten to fifteen percent of what TSMC produces in Taiwan. The geographic concentration is not solved. It is marginally reduced.",
+        "paragraphs": [
+          "The United States has understood this risk. The CHIPS and Science Act of 2022 allocated fifty-two billion dollars in subsidies to bring advanced semiconductor production to American soil.",
+          "TSMC responded by committing sixty-five billion dollars to three fabs in Arizona.",
+          "But even with that investment fully online by 2030, the Arizona facilities are projected to represent roughly ten to fifteen percent of what TSMC produces in Taiwan.",
+          "The geographic concentration is not solved. It is marginally reduced."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/06_MECHANISM_4.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:1:0",
+          "sentence:1:1",
+          "sentence:1:2",
+          "sentence:1:3",
+          "sentence:1:4",
+          "sentence:1:5"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_027",
+      "scene_order": 27,
+      "section": "MECHANISM 4 \u2014 THE GEOGRAPHIC CHOKEPOINT",
+      "section_order": 6,
+      "section_key": "06_MECHANISM_4",
+      "start_sec": 507.34400000000005,
+      "end_sec": 531.33,
+      "duration_sec": 23.98599999999999,
+      "local_start_sec": 47.264,
+      "local_end_sec": 71.25,
+      "start_frame": 15220,
+      "end_frame": 15940,
+      "duration_frames": 720,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Construction site of TSMC's Arizona fab in Phoenix. Enormous white structures rising from desert floor. Workers in hard hats. American and Taiwanese flags visible at the construction entrance. Sky is clear blue.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "Building the Arizona fabs has also revealed something important: the difficulty is not just money. TSMC has reported significant challenges hiring and training semiconductor engineers at the scale and specialization required. Taiwan's workforce has been building this specific expertise for thirty-five years. Phoenix has had roughly three years. The institutional knowledge gap cannot be purchased with a subsidy check.",
+        "paragraphs": [
+          "Building the Arizona fabs has also revealed something important: the difficulty is not just money.",
+          "TSMC has reported significant challenges hiring and training semiconductor engineers at the scale and specialization required.",
+          "Taiwan's workforce has been building this specific expertise for thirty-five years. Phoenix has had roughly three years.",
+          "The institutional knowledge gap cannot be purchased with a subsidy check."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/06_MECHANISM_4.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:2:0",
+          "sentence:2:1",
+          "sentence:2:2",
+          "sentence:2:3",
+          "sentence:2:4"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_028",
+      "scene_order": 28,
+      "section": "MECHANISM 4 \u2014 THE GEOGRAPHIC CHOKEPOINT",
+      "section_order": 6,
+      "section_key": "06_MECHANISM_4",
+      "start_sec": 531.5740000000001,
+      "end_sec": 561.388,
+      "duration_sec": 29.813999999999965,
+      "local_start_sec": 71.494,
+      "local_end_sec": 101.308,
+      "start_frame": 15947,
+      "end_frame": 16842,
+      "duration_frames": 895,
+      "visual_type": "TABLE",
+      "visual": {
+        "type": "TABLE",
+        "prompt": null,
+        "data": {
+          "title": "Global advanced fab capacity by country (sub-5nm, projected 2025)",
+          "columns": [
+            "Country/Region",
+            "Capacity Share"
+          ],
+          "rows": [
+            [
+              "Taiwan",
+              "~68%"
+            ],
+            [
+              "South Korea (Samsung)",
+              "~12%"
+            ],
+            [
+              "United States",
+              "~8% (primarily TSMC Arizona N4)"
+            ],
+            [
+              "China",
+              "~3% (lagging significantly on EUV access)"
+            ],
+            [
+              "Europe",
+              "<2%"
+            ],
+            [
+              "Japan",
+              "~2%"
+            ],
+            [
+              "Source",
+              "Boston Consulting Group / SIA estimates"
+            ]
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "The global map of advanced chip production is startling in its concentration. Taiwan and South Korea together account for roughly eighty percent of advanced node output. The United States, despite being the country that invented the semiconductor industry, accounts for less than ten percent \u2014 and that number includes TSMC's Arizona output. China, despite spending hundreds of billions on domestic semiconductor programs, remains effectively locked out of the most advanced nodes due to export controls on EUV machines.",
+        "paragraphs": [
+          "The global map of advanced chip production is startling in its concentration.",
+          "Taiwan and South Korea together account for roughly eighty percent of advanced node output.",
+          "The United States, despite being the country that invented the semiconductor industry, accounts for less than ten percent \u2014 and that number includes TSMC's Arizona output.",
+          "China, despite spending hundreds of billions on domestic semiconductor programs, remains effectively locked out of the most advanced nodes due to export controls on EUV machines."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/06_MECHANISM_4.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:3:0",
+          "sentence:3:1",
+          "sentence:3:2",
+          "sentence:3:3"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_029",
+      "scene_order": 29,
+      "section": "MECHANISM 4 \u2014 THE GEOGRAPHIC CHOKEPOINT",
+      "section_order": 6,
+      "section_key": "06_MECHANISM_4",
+      "start_sec": 561.899,
+      "end_sec": 604.043,
+      "duration_sec": 42.144000000000005,
+      "local_start_sec": 101.819,
+      "local_end_sec": 143.963,
+      "start_frame": 16857,
+      "end_frame": 18121,
+      "duration_frames": 1264,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Split screen \u2014 left side: ASML headquarters in Eindhoven, Netherlands. Right side: A world map showing EUV machine restrictions. Red lines from ASML to permitted countries. China highlighted gray with a restriction symbol.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "That last point matters enormously. China cannot currently buy EUV machines. The Dutch government, under pressure from the United States, has blocked ASML from exporting EUV tools to Chinese customers. Without EUV, manufacturing at three nanometers or below is effectively impossible. China's most advanced domestic manufacturer, SMIC, is producing chips at what experts estimate is a seven-to-nine nanometer equivalent \u2014 a full two generations behind TSMC's leading edge. Which means we arrive at the final question \u2014 the one this entire script has been building toward. If TSMC is this powerful, this irreplaceable, and this geographically concentrated \u2014 what does that actually mean for the world?",
+        "paragraphs": [
+          "That last point matters enormously. China cannot currently buy EUV machines.",
+          "The Dutch government, under pressure from the United States, has blocked ASML from exporting EUV tools to Chinese customers.",
+          "Without EUV, manufacturing at three nanometers or below is effectively impossible.",
+          "China's most advanced domestic manufacturer, SMIC, is producing chips at what experts estimate is a seven-to-nine nanometer equivalent \u2014 a full two generations behind TSMC's leading edge.",
+          "Which means we arrive at the final question \u2014 the one this entire script has been building toward.",
+          "If TSMC is this powerful, this irreplaceable, and this geographically concentrated \u2014 what does that actually mean for the world?"
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/06_MECHANISM_4.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:4:0",
+          "sentence:4:1",
+          "sentence:4:2",
+          "sentence:4:3",
+          "sentence:4:4",
+          "sentence:5:0",
+          "sentence:5:1"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_030",
+      "scene_order": 30,
+      "section": "CONCLUSION",
+      "section_order": 7,
+      "section_key": "07_CONCLUSION",
+      "start_sec": 604.043,
+      "end_sec": 634.868,
+      "duration_sec": 30.825000000000045,
+      "local_start_sec": 0.0,
+      "local_end_sec": 30.825,
+      "start_frame": 18121,
+      "end_frame": 19046,
+      "duration_frames": 925,
+      "visual_type": "AI_VIDEO",
+      "visual": {
+        "type": "AI_VIDEO",
+        "prompt": "Long slow aerial shot over the Taiwan Strait at sunrise. Calm water. Light turning gold. The island of Taiwan visible on the right edge. Cinematic, almost meditative. No text overlay.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "Here is what TSMC actually is, underneath all the data. It is not just a company. It is the physical infrastructure layer of the modern technology economy. Every AI model, every smartphone, every cloud server, every autonomous vehicle, every satellite guidance system runs on chips that TSMC made possible. It sits at a chokepoint so narrow, so technically deep, and so geographically specific that it has become \u2014 without ever intending to \u2014 a kind of invisible sovereign.",
+        "paragraphs": [
+          "Here is what TSMC actually is, underneath all the data. It is not just a company.",
+          "It is the physical infrastructure layer of the modern technology economy.",
+          "Every AI model, every smartphone, every cloud server, every autonomous vehicle, every satellite guidance system runs on chips that TSMC made possible.",
+          "It sits at a chokepoint so narrow, so technically deep, and so geographically specific that it has become \u2014 without ever intending to \u2014 a kind of invisible sovereign."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/07_CONCLUSION.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:0:0",
+          "sentence:0:1",
+          "sentence:0:2",
+          "sentence:0:3",
+          "sentence:0:4"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_031",
+      "scene_order": 31,
+      "section": "CONCLUSION",
+      "section_order": 7,
+      "section_key": "07_CONCLUSION",
+      "start_sec": 635.9830000000001,
+      "end_sec": 670.835,
+      "duration_sec": 34.851999999999975,
+      "local_start_sec": 31.94,
+      "local_end_sec": 66.792,
+      "start_frame": 19079,
+      "end_frame": 20125,
+      "duration_frames": 1046,
+      "visual_type": "B_ROLL",
+      "visual": {
+        "type": "B_ROLL",
+        "prompt": "Morris Chang, elderly, giving a speech at a podium. Audience of engineers and executives. Behind him, a massive slide that says simply: 'Innovation. Integrity. Customer Trust.' Pull back to show the scale of the auditorium.",
+        "data": null
+      },
+      "dialogue": {
+        "text": "Morris Chang built TSMC on a counterintuitive bet: that being the world's best manufacturer \u2014 owning nothing but the process \u2014 was a more defensible position than designing great products. He was right. And the compounding of that advantage across thirty-five years, through physics, capital, talent, and customer lock-in, has produced something the economics textbooks have no clean category for. It is not a monopoly in the legal sense. It is a monopoly in the structural sense. A natural monopoly of irreplaceable complexity.",
+        "paragraphs": [
+          "Morris Chang built TSMC on a counterintuitive bet: that being the world's best manufacturer \u2014 owning nothing but the process \u2014 was a more defensible position than designing great products.",
+          "He was right. And the compounding of that advantage across thirty-five years, through physics, capital, talent, and customer lock-in, has produced something the economics textbooks have no clean category for.",
+          "It is not a monopoly in the legal sense. It is a monopoly in the structural sense.",
+          "A natural monopoly of irreplaceable complexity."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/07_CONCLUSION.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:1:0",
+          "sentence:1:1",
+          "sentence:1:2",
+          "sentence:1:3",
+          "sentence:1:4",
+          "sentence:1:5"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_032",
+      "scene_order": 32,
+      "section": "CONCLUSION",
+      "section_order": 7,
+      "section_key": "07_CONCLUSION",
+      "start_sec": 671.532,
+      "end_sec": 712.399,
+      "duration_sec": 40.86699999999996,
+      "local_start_sec": 67.489,
+      "local_end_sec": 108.356,
+      "start_frame": 20146,
+      "end_frame": 21372,
+      "duration_frames": 1226,
+      "visual_type": "SHARE_BREAKDOWN",
+      "visual": {
+        "type": "SHARE_BREAKDOWN",
+        "prompt": null,
+        "data": {
+          "title": "What makes TSMC's moat",
+          "unit": "%",
+          "items": [
+            {
+              "label": "Process leadership: 35 years of compounding R&D",
+              "value": 16.67
+            },
+            {
+              "label": "Customer lock-in: Multi-year design cycles, no switching precedent",
+              "value": 16.67
+            },
+            {
+              "label": "Capital barriers: $20B+ per fab, no shortcuts",
+              "value": 16.67
+            },
+            {
+              "label": "Workforce: 73,000+ engineers, 35 years of institutional knowledge",
+              "value": 16.67
+            },
+            {
+              "label": "Supply chain: Exclusive or preferred relationships with ASML, Lam Research, Applied Materials",
+              "value": 16.66
+            },
+            {
+              "label": "Geography: Taiwan's strategic location forces geopolitical protection",
+              "value": 16.66
+            }
+          ]
+        }
+      },
+      "dialogue": {
+        "text": "The moat is not one thing. It is the accumulation of six different structural advantages, each of which reinforces the others. Process leadership builds customer loyalty. Customer loyalty funds R&D. R&D deepens the process lead. Capital requirements deter competition. The workforce becomes more specialized with each year. And the supply chain \u2014 from ASML machines to chemical suppliers \u2014 grows more integrated with TSMC's specific needs. This is what a real economic moat looks like. Not a patent. Not a brand. A system of interlocking dependencies that took three decades to build.",
+        "paragraphs": [
+          "The moat is not one thing. It is the accumulation of six different structural advantages, each of which reinforces the others.",
+          "Process leadership builds customer loyalty. Customer loyalty funds R&D. R&D deepens the process lead. Capital requirements deter competition.",
+          "The workforce becomes more specialized with each year. And the supply chain \u2014 from ASML machines to chemical suppliers \u2014 grows more integrated with TSMC's specific needs.",
+          "This is what a real economic moat looks like. Not a patent. Not a brand.",
+          "A system of interlocking dependencies that took three decades to build."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/07_CONCLUSION.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:2:0",
+          "sentence:2:1",
+          "sentence:2:2",
+          "sentence:2:3",
+          "sentence:2:4",
+          "sentence:2:5",
+          "sentence:2:6",
+          "sentence:2:7",
+          "sentence:2:8",
+          "sentence:2:9",
+          "sentence:2:10",
+          "sentence:2:11"
+        ]
+      },
+      "warnings": []
+    },
+    {
+      "id": "scene_033",
+      "scene_order": 33,
+      "section": "CONCLUSION",
+      "section_order": 7,
+      "section_key": "07_CONCLUSION",
+      "start_sec": 713.095,
+      "end_sec": 752.79,
+      "duration_sec": 39.694999999999936,
+      "local_start_sec": 109.052,
+      "local_end_sec": 148.747,
+      "start_frame": 21393,
+      "end_frame": 22584,
+      "duration_frames": 1191,
+      "visual_type": "AI_VIDEO",
+      "visual": {
+        "type": "AI_VIDEO",
+        "prompt": "Final shot \u2014 zoom in slowly on a single silicon wafer sitting alone in an otherwise empty cleanroom. The wafer reflects the overhead lights like a mirror. Fade to black. Then a single line of text appears: 'The most important object in the world's economy weighs 125 grams.'",
+        "data": null
+      },
+      "dialogue": {
+        "text": "And so we return to where we started. Sand, transformed through thirty-five years of accumulated human knowledge, billions of dollars of capital, and a set of institutional choices almost no one noticed being made \u2014 into something that governs the pace of human technological progress. TSMC did not set out to control the world's most critical infrastructure. It set out to be the best manufacturer in the world. It achieved both at the same time. The question now is not whether TSMC is powerful. The question is whether any nation, any institution, or any competitor has the thirty-five years left to challenge it.",
+        "paragraphs": [
+          "And so we return to where we started. Sand, transformed through thirty-five years of accumulated human knowledge, billions of dollars of capital, and a set of institutional choices almost no one noticed being made \u2014 into something that governs the pace of human technological progress.",
+          "TSMC did not set out to control the world's most critical infrastructure.",
+          "It set out to be the best manufacturer in the world. It achieved both at the same time.",
+          "The question now is not whether TSMC is powerful. The question is whether any nation, any institution, or any competitor has the thirty-five years left to challenge it."
+        ]
+      },
+      "audio": {
+        "path": "examples/audio/07_CONCLUSION.mp3"
+      },
+      "alignment": {
+        "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
+        "match_method": "sentence",
+        "matched_units": [
+          "sentence:3:0",
+          "sentence:3:1",
+          "sentence:3:2",
+          "sentence:3:3",
+          "sentence:3:4",
+          "sentence:3:5",
+          "sentence:3:6"
+        ]
+      },
+      "warnings": []
+    }
+  ],
+  "assets": {
+    "audio": [
+      {
+        "section_key": "01_HOOK",
+        "path": "examples/audio/01_HOOK.mp3"
+      },
+      {
+        "section_key": "02_INTRO",
+        "path": "examples/audio/02_INTRO.mp3"
+      },
+      {
+        "section_key": "03_MECHANISM_1",
+        "path": "examples/audio/03_MECHANISM_1.mp3"
+      },
+      {
+        "section_key": "04_MECHANISM_2",
+        "path": "examples/audio/04_MECHANISM_2.mp3"
+      },
+      {
+        "section_key": "05_MECHANISM_3",
+        "path": "examples/audio/05_MECHANISM_3.mp3"
+      },
+      {
+        "section_key": "06_MECHANISM_4",
+        "path": "examples/audio/06_MECHANISM_4.mp3"
+      },
+      {
+        "section_key": "07_CONCLUSION",
+        "path": "examples/audio/07_CONCLUSION.mp3"
+      }
+    ],
+    "visuals": []
+  },
+  "warnings": [
+    "section 07_CONCLUSION has a gap of 1.115s between scene_030 and scene_031"
+  ]
+}
