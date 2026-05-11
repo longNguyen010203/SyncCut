@@ -1,5 +1,6 @@
 import {AbsoluteFill, Sequence} from "remotion";
 import {SceneRenderer} from "./components/SceneRenderer";
+import {SectionAudio} from "./components/SectionAudio";
 import type {SyncCutProps} from "./types";
 
 export const Video = ({metadata, scenes, sections}: SyncCutProps) => {
@@ -12,6 +13,7 @@ export const Video = ({metadata, scenes, sections}: SyncCutProps) => {
           "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
       }}
     >
+      <SectionAudio sections={sections} />
       {scenes.map((scene) => (
         <Sequence
           key={scene.id}

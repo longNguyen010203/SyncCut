@@ -122,6 +122,82 @@ def write_tiny_timeline(root: Path) -> Path:
     return timeline_json
 
 
+def write_tiny_remotion_props(root: Path, audio_path: str) -> Path:
+    props_json = root / "remotion" / "props.json"
+    props_json.parent.mkdir(parents=True, exist_ok=True)
+    props_json.write_text(
+        json.dumps(
+            {
+                "metadata": {
+                    "generated_by": "synccut export-remotion",
+                    "source_timeline": "timeline.json",
+                    "fps": 30,
+                    "duration_sec": 2.0,
+                    "duration_frames": 60,
+                    "total_scenes": 1,
+                    "total_sections": 1,
+                },
+                "composition": {
+                    "id": "SyncCutVideo",
+                    "width": 1920,
+                    "height": 1080,
+                    "fps": 30,
+                    "duration_frames": 60,
+                },
+                "sections": [
+                    {
+                        "section_key": "01_HOOK",
+                        "section": "HOOK",
+                        "section_order": 1,
+                        "start_sec": 0.0,
+                        "end_sec": 2.0,
+                        "duration_sec": 2.0,
+                        "start_frame": 0,
+                        "end_frame": 60,
+                        "duration_frames": 60,
+                        "audio": {"path": audio_path},
+                        "alignment": {"path": "alignments/01_HOOK_alignment.json"},
+                    }
+                ],
+                "scenes": [
+                    {
+                        "id": "scene_001",
+                        "scene_order": 1,
+                        "section": "HOOK",
+                        "section_order": 1,
+                        "section_key": "01_HOOK",
+                        "start_sec": 0.0,
+                        "end_sec": 2.0,
+                        "duration_sec": 2.0,
+                        "local_start_sec": 0.0,
+                        "local_end_sec": 2.0,
+                        "start_frame": 0,
+                        "end_frame": 60,
+                        "duration_frames": 60,
+                        "visual_type": "AI_VIDEO",
+                        "visual": {"type": "AI_VIDEO", "prompt": "Prompt", "data": None},
+                        "dialogue": {"text": "Hello.", "paragraphs": ["Hello."]},
+                        "audio": {"path": audio_path},
+                        "alignment": {
+                            "path": "alignments/01_HOOK_alignment.json",
+                            "match_method": "paragraph",
+                            "matched_units": ["paragraph:0"],
+                        },
+                        "warnings": [],
+                    }
+                ],
+                "assets": {
+                    "audio": [{"section_key": "01_HOOK", "path": audio_path}],
+                    "visuals": [],
+                },
+                "warnings": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return props_json
+
+
 def write_timeline_with_gap_warning(root: Path) -> Path:
     timeline_json = root / "timeline-with-gap.json"
     timeline_json.write_text(
@@ -362,4 +438,70 @@ def test_export_remotion_cli_fails_clearly_on_invalid_timeline(tmp_path) -> None
     assert result.exit_code == 1
     assert "Error:" in result.output
     assert "invalid timeline" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_prepare_remotion_assets_cli_succeeds_on_tiny_props_fixture(
+    tmp_path, monkeypatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    audio_path = tmp_path / "audio" / "01_HOOK.mp3"
+    audio_path.parent.mkdir()
+    audio_path.write_bytes(b"audio")
+    props_json = write_tiny_remotion_props(tmp_path, "audio/01_HOOK.mp3")
+    out_dir = tmp_path / "remotion" / "public"
+
+    result = CliRunner().invoke(
+        app,
+        ["prepare-remotion-assets", str(props_json), "--out-dir", str(out_dir)],
+    )
+
+    assert result.exit_code == 0
+    assert (out_dir / "audio" / "01_HOOK.mp3").read_bytes() == b"audio"
+    data = json.loads(props_json.read_text(encoding="utf-8"))
+    assert data["assets"]["audio"][0]["public_path"] == "audio/01_HOOK.mp3"
+    assert data["sections"][0]["audio"]["public_path"] == "audio/01_HOOK.mp3"
+    assert data["scenes"][0]["audio"]["public_path"] == "audio/01_HOOK.mp3"
+    assert f"Prepared Remotion assets for {props_json}" in result.output
+    assert "audio_copied: 1" in result.output
+    assert "audio_reused: 0" in result.output
+    assert "audio_overwritten: 0" in result.output
+    assert "audio_assets: 1" in result.output
+    assert f"public_dir: {out_dir}" in result.output
+
+
+def test_prepare_remotion_assets_cli_fails_on_malformed_props(tmp_path) -> None:
+    props_json = tmp_path / "props.json"
+    props_json.write_text(json.dumps({"assets": {}}), encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        ["prepare-remotion-assets", str(props_json), "--out-dir", str(tmp_path / "public")],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "assets.audio must be an array" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_prepare_remotion_assets_cli_fails_on_missing_source_audio(
+    tmp_path, monkeypatch
+) -> None:
+    monkeypatch.chdir(tmp_path)
+    props_json = write_tiny_remotion_props(tmp_path, "audio/missing.mp3")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "prepare-remotion-assets",
+            str(props_json),
+            "--out-dir",
+            str(tmp_path / "remotion" / "public"),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "source audio file not found" in result.output
     assert "Traceback" not in result.output

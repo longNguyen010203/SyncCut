@@ -35,6 +35,7 @@ export interface SyncCutComposition {
 
 export interface SyncCutAudioRef {
   path: string;
+  public_path?: string;
 }
 
 export interface SyncCutAlignmentRef {
@@ -93,6 +94,7 @@ export interface SyncCutScene {
 export interface SyncCutAudioAsset {
   section_key: string;
   path: string;
+  public_path?: string;
 }
 
 export interface SyncCutAssets {

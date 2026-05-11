@@ -27,7 +27,8 @@
       "end_frame": 552,
       "duration_frames": 552,
       "audio": {
-        "path": "examples/audio/01_HOOK.mp3"
+        "path": "examples/audio/01_HOOK.mp3",
+        "public_path": "audio/01_HOOK.mp3"
       },
       "alignment": {
         "path": "examples/alignments/01_HOOK_alignment_tmp.json"
@@ -44,7 +45,8 @@
       "end_frame": 2334,
       "duration_frames": 1782,
       "audio": {
-        "path": "examples/audio/02_INTRO.mp3"
+        "path": "examples/audio/02_INTRO.mp3",
+        "public_path": "audio/02_INTRO.mp3"
       },
       "alignment": {
         "path": "examples/alignments/02_INTRO_alignment_tmp.json"
@@ -61,7 +63,8 @@
       "end_frame": 4857,
       "duration_frames": 2523,
       "audio": {
-        "path": "examples/audio/03_MECHANISM_1.mp3"
+        "path": "examples/audio/03_MECHANISM_1.mp3",
+        "public_path": "audio/03_MECHANISM_1.mp3"
       },
       "alignment": {
         "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json"
@@ -78,7 +81,8 @@
       "end_frame": 9236,
       "duration_frames": 4379,
       "audio": {
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       "alignment": {
         "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json"
@@ -95,7 +99,8 @@
       "end_frame": 13802,
       "duration_frames": 4566,
       "audio": {
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       "alignment": {
         "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json"
@@ -112,7 +117,8 @@
       "end_frame": 18121,
       "duration_frames": 4319,
       "audio": {
-        "path": "examples/audio/06_MECHANISM_4.mp3"
+        "path": "examples/audio/06_MECHANISM_4.mp3",
+        "public_path": "audio/06_MECHANISM_4.mp3"
       },
       "alignment": {
         "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json"
@@ -129,7 +135,8 @@
       "end_frame": 22584,
       "duration_frames": 4463,
       "audio": {
-        "path": "examples/audio/07_CONCLUSION.mp3"
+        "path": "examples/audio/07_CONCLUSION.mp3",
+        "public_path": "audio/07_CONCLUSION.mp3"
       },
       "alignment": {
         "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json"
@@ -165,7 +172,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/01_HOOK.mp3"
+        "path": "examples/audio/01_HOOK.mp3",
+        "public_path": "audio/01_HOOK.mp3"
       },
       "alignment": {
         "path": "examples/alignments/01_HOOK_alignment_tmp.json",
@@ -217,7 +225,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/01_HOOK.mp3"
+        "path": "examples/audio/01_HOOK.mp3",
+        "public_path": "audio/01_HOOK.mp3"
       },
       "alignment": {
         "path": "examples/alignments/01_HOOK_alignment_tmp.json",
@@ -255,7 +264,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/01_HOOK.mp3"
+        "path": "examples/audio/01_HOOK.mp3",
+        "public_path": "audio/01_HOOK.mp3"
       },
       "alignment": {
         "path": "examples/alignments/01_HOOK_alignment_tmp.json",
@@ -294,7 +304,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/02_INTRO.mp3"
+        "path": "examples/audio/02_INTRO.mp3",
+        "public_path": "audio/02_INTRO.mp3"
       },
       "alignment": {
         "path": "examples/alignments/02_INTRO_alignment_tmp.json",
@@ -365,7 +376,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/02_INTRO.mp3"
+        "path": "examples/audio/02_INTRO.mp3",
+        "public_path": "audio/02_INTRO.mp3"
       },
       "alignment": {
         "path": "examples/alignments/02_INTRO_alignment_tmp.json",
@@ -408,7 +420,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/02_INTRO.mp3"
+        "path": "examples/audio/02_INTRO.mp3",
+        "public_path": "audio/02_INTRO.mp3"
       },
       "alignment": {
         "path": "examples/alignments/02_INTRO_alignment_tmp.json",
@@ -477,7 +490,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/02_INTRO.mp3"
+        "path": "examples/audio/02_INTRO.mp3",
+        "public_path": "audio/02_INTRO.mp3"
       },
       "alignment": {
         "path": "examples/alignments/02_INTRO_alignment_tmp.json",
@@ -517,7 +531,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/03_MECHANISM_1.mp3"
+        "path": "examples/audio/03_MECHANISM_1.mp3",
+        "public_path": "audio/03_MECHANISM_1.mp3"
       },
       "alignment": {
         "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
@@ -569,7 +584,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/03_MECHANISM_1.mp3"
+        "path": "examples/audio/03_MECHANISM_1.mp3",
+        "public_path": "audio/03_MECHANISM_1.mp3"
       },
       "alignment": {
         "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
@@ -612,7 +628,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/03_MECHANISM_1.mp3"
+        "path": "examples/audio/03_MECHANISM_1.mp3",
+        "public_path": "audio/03_MECHANISM_1.mp3"
       },
       "alignment": {
         "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
@@ -687,7 +704,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/03_MECHANISM_1.mp3"
+        "path": "examples/audio/03_MECHANISM_1.mp3",
+        "public_path": "audio/03_MECHANISM_1.mp3"
       },
       "alignment": {
         "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
@@ -767,7 +785,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/03_MECHANISM_1.mp3"
+        "path": "examples/audio/03_MECHANISM_1.mp3",
+        "public_path": "audio/03_MECHANISM_1.mp3"
       },
       "alignment": {
         "path": "examples/alignments/03_MECHANISM_1_alignment_tmp.json",
@@ -812,7 +831,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       "alignment": {
         "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
@@ -888,7 +908,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       "alignment": {
         "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
@@ -931,7 +952,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       "alignment": {
         "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
@@ -987,7 +1009,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       "alignment": {
         "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
@@ -1031,7 +1054,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       "alignment": {
         "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
@@ -1118,7 +1142,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       "alignment": {
         "path": "examples/alignments/04_MECHANISM_2_alignment_tmp.json",
@@ -1195,7 +1220,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       "alignment": {
         "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
@@ -1244,7 +1270,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       "alignment": {
         "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
@@ -1299,7 +1326,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       "alignment": {
         "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
@@ -1344,7 +1372,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       "alignment": {
         "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
@@ -1417,7 +1446,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       "alignment": {
         "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
@@ -1508,7 +1538,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       "alignment": {
         "path": "examples/alignments/05_MECHANISM_3_alignment_tmp.json",
@@ -1553,7 +1584,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/06_MECHANISM_4.mp3"
+        "path": "examples/audio/06_MECHANISM_4.mp3",
+        "public_path": "audio/06_MECHANISM_4.mp3"
       },
       "alignment": {
         "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
@@ -1606,7 +1638,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/06_MECHANISM_4.mp3"
+        "path": "examples/audio/06_MECHANISM_4.mp3",
+        "public_path": "audio/06_MECHANISM_4.mp3"
       },
       "alignment": {
         "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
@@ -1652,7 +1685,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/06_MECHANISM_4.mp3"
+        "path": "examples/audio/06_MECHANISM_4.mp3",
+        "public_path": "audio/06_MECHANISM_4.mp3"
       },
       "alignment": {
         "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
@@ -1733,7 +1767,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/06_MECHANISM_4.mp3"
+        "path": "examples/audio/06_MECHANISM_4.mp3",
+        "public_path": "audio/06_MECHANISM_4.mp3"
       },
       "alignment": {
         "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
@@ -1779,7 +1814,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/06_MECHANISM_4.mp3"
+        "path": "examples/audio/06_MECHANISM_4.mp3",
+        "public_path": "audio/06_MECHANISM_4.mp3"
       },
       "alignment": {
         "path": "examples/alignments/06_MECHANISM_4_alignment_tmp.json",
@@ -1826,7 +1862,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/07_CONCLUSION.mp3"
+        "path": "examples/audio/07_CONCLUSION.mp3",
+        "public_path": "audio/07_CONCLUSION.mp3"
       },
       "alignment": {
         "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
@@ -1871,7 +1908,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/07_CONCLUSION.mp3"
+        "path": "examples/audio/07_CONCLUSION.mp3",
+        "public_path": "audio/07_CONCLUSION.mp3"
       },
       "alignment": {
         "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
@@ -1947,7 +1985,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/07_CONCLUSION.mp3"
+        "path": "examples/audio/07_CONCLUSION.mp3",
+        "public_path": "audio/07_CONCLUSION.mp3"
       },
       "alignment": {
         "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
@@ -1999,7 +2038,8 @@
         ]
       },
       "audio": {
-        "path": "examples/audio/07_CONCLUSION.mp3"
+        "path": "examples/audio/07_CONCLUSION.mp3",
+        "public_path": "audio/07_CONCLUSION.mp3"
       },
       "alignment": {
         "path": "examples/alignments/07_CONCLUSION_alignment_tmp.json",
@@ -2021,31 +2061,38 @@
     "audio": [
       {
         "section_key": "01_HOOK",
-        "path": "examples/audio/01_HOOK.mp3"
+        "path": "examples/audio/01_HOOK.mp3",
+        "public_path": "audio/01_HOOK.mp3"
       },
       {
         "section_key": "02_INTRO",
-        "path": "examples/audio/02_INTRO.mp3"
+        "path": "examples/audio/02_INTRO.mp3",
+        "public_path": "audio/02_INTRO.mp3"
       },
       {
         "section_key": "03_MECHANISM_1",
-        "path": "examples/audio/03_MECHANISM_1.mp3"
+        "path": "examples/audio/03_MECHANISM_1.mp3",
+        "public_path": "audio/03_MECHANISM_1.mp3"
       },
       {
         "section_key": "04_MECHANISM_2",
-        "path": "examples/audio/04_MECHANISM_2.mp3"
+        "path": "examples/audio/04_MECHANISM_2.mp3",
+        "public_path": "audio/04_MECHANISM_2.mp3"
       },
       {
         "section_key": "05_MECHANISM_3",
-        "path": "examples/audio/05_MECHANISM_3.mp3"
+        "path": "examples/audio/05_MECHANISM_3.mp3",
+        "public_path": "audio/05_MECHANISM_3.mp3"
       },
       {
         "section_key": "06_MECHANISM_4",
-        "path": "examples/audio/06_MECHANISM_4.mp3"
+        "path": "examples/audio/06_MECHANISM_4.mp3",
+        "public_path": "audio/06_MECHANISM_4.mp3"
       },
       {
         "section_key": "07_CONCLUSION",
-        "path": "examples/audio/07_CONCLUSION.mp3"
+        "path": "examples/audio/07_CONCLUSION.mp3",
+        "public_path": "audio/07_CONCLUSION.mp3"
       }
     ],
     "visuals": []

@@ -5,6 +5,7 @@ from typing import Annotated
 import typer
 
 from synccut.alignment_loader import load_section_assets
+from synccut.remotion_assets import prepare_remotion_assets_file
 from synccut.remotion_exporter import export_remotion_props_file
 from synccut.scenes_loader import load_scenes
 from synccut.timeline_builder import build_timeline as build_timeline_data
@@ -100,6 +101,26 @@ def export_remotion_cmd(
     typer.echo(f"fps: {props['metadata']['fps']}")
     typer.echo(f"duration_frames: {props['metadata']['duration_frames']}")
     typer.echo(f"warnings: {len(props['warnings'])}")
+
+
+@app.command("prepare-remotion-assets")
+def prepare_remotion_assets_cmd(
+    props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
+    out_dir: Annotated[Path, typer.Option(help="Remotion public directory.")],
+) -> None:
+    """Copy Remotion assets into the public directory and update props JSON."""
+    try:
+        result = prepare_remotion_assets_file(props_json, out_dir)
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    typer.echo(f"Prepared Remotion assets for {props_json}")
+    typer.echo(f"audio_copied: {result.copied}")
+    typer.echo(f"audio_reused: {result.reused}")
+    typer.echo(f"audio_overwritten: {result.overwritten}")
+    typer.echo(f"audio_assets: {len(result.audio_assets)}")
+    typer.echo(f"public_dir: {out_dir}")
 
 
 if __name__ == "__main__":
