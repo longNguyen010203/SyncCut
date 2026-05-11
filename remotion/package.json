@@ -6,7 +6,8 @@
   "scripts": {
     "studio": "remotion studio src/index.ts",
     "typecheck": "tsc --noEmit",
-    "still": "remotion still src/index.ts SyncCutVideo out/preview.png --frame=0"
+    "still": "remotion still src/index.ts SyncCutVideo out/preview.png --frame=0",
+    "still:local": "remotion still src/index.ts SyncCutVideo out/preview.png --frame=0 --browser-executable=/usr/bin/google-chrome --chrome-mode=chrome-for-testing"
   },
   "dependencies": {
     "react": "^18.2.0",
