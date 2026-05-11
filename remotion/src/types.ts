@@ -62,6 +62,9 @@ export interface SyncCutVisual {
   type: VisualType;
   prompt: string | null;
   data: JsonValue;
+  public_path?: string;
+  asset_status?: "prepared" | "missing" | "unsupported";
+  asset_source?: "local";
 }
 
 export interface SyncCutDialogue {

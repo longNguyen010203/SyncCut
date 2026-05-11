@@ -1,5 +1,5 @@
-import {PlaceholderScene} from "./PlaceholderScene";
 import type {SyncCutScene, SyncCutSection} from "../types";
+import {VisualAssetScene} from "./VisualAssetScene";
 
 export const BRollScene = ({
   scene,
@@ -8,10 +8,11 @@ export const BRollScene = ({
   scene: SyncCutScene;
   section?: SyncCutSection;
 }) => (
-  <PlaceholderScene
+  <VisualAssetScene
     scene={scene}
     section={section}
-    label="B-roll Placeholder"
+    assetLabel="B-roll Asset"
+    placeholderLabel="B-roll Placeholder"
     accentColor="#22c55e"
   />
 );

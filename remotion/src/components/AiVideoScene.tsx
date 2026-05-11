@@ -1,5 +1,5 @@
-import {PlaceholderScene} from "./PlaceholderScene";
 import type {SyncCutScene, SyncCutSection} from "../types";
+import {VisualAssetScene} from "./VisualAssetScene";
 
 export const AiVideoScene = ({
   scene,
@@ -8,10 +8,11 @@ export const AiVideoScene = ({
   scene: SyncCutScene;
   section?: SyncCutSection;
 }) => (
-  <PlaceholderScene
+  <VisualAssetScene
     scene={scene}
     section={section}
-    label="AI Video Placeholder"
+    assetLabel="AI Video Asset"
+    placeholderLabel="AI Video Placeholder"
     accentColor="#38bdf8"
   />
 );

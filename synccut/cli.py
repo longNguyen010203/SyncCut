@@ -12,6 +12,7 @@ from synccut.timeline_builder import build_timeline as build_timeline_data
 from synccut.timeline_inspector import build_timeline_overview
 from synccut.timeline_validator import load_timeline_json, validate_timeline
 from synccut.validators import SyncCutError
+from synccut.visual_assets import prepare_visual_assets_file
 
 app = typer.Typer(help="Build structured video production timelines.")
 
@@ -120,6 +121,28 @@ def prepare_remotion_assets_cmd(
     typer.echo(f"audio_reused: {result.reused}")
     typer.echo(f"audio_overwritten: {result.overwritten}")
     typer.echo(f"audio_assets: {len(result.audio_assets)}")
+    typer.echo(f"public_dir: {out_dir}")
+
+
+@app.command("prepare-visual-assets")
+def prepare_visual_assets_cmd(
+    props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
+    assets_dir: Annotated[Path, typer.Option(help="Directory containing local visual assets.")],
+    out_dir: Annotated[Path, typer.Option(help="Remotion public directory.")],
+) -> None:
+    """Copy local visual assets into the public directory and update props JSON."""
+    try:
+        result = prepare_visual_assets_file(props_json, assets_dir, out_dir)
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    typer.echo(f"Prepared Remotion visual assets for {props_json}")
+    typer.echo(f"visual_copied: {result.copied}")
+    typer.echo(f"visual_reused: {result.reused}")
+    typer.echo(f"visual_overwritten: {result.overwritten}")
+    typer.echo(f"visual_missing: {result.missing}")
+    typer.echo(f"visual_assets: {len(result.visual_assets)}")
     typer.echo(f"public_dir: {out_dir}")
 
 
