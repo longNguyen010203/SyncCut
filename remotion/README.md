@@ -44,6 +44,17 @@ npm run still:local
 
 If Chrome exits with `SIGTRAP` or `setsockopt: Operation not permitted`, the environment is blocking browser launch rather than failing Remotion app code.
 
+## Render Smoke Test
+
+```bash
+cd remotion
+npm run render:smoke:local
+```
+
+This renders frames `0-149` to `out/smoke.mp4`. At 30 fps, that is 150 frames, or about 5 seconds. The command uses local Chrome at `/usr/bin/google-chrome` and may require browser launch permission in sandboxed environments.
+
+This smoke clip is not the final MP4. Do not commit generated output under `out/`.
+
 ## Studio Preview
 
 ```bash
@@ -71,6 +82,7 @@ Do not commit generated preview or dependency output:
 - `timeline.json`
 - `remotion/public/audio/*.mp3`
 - `remotion/out/preview.png`
+- `remotion/out/smoke.mp4`
 - `remotion/node_modules/`
 
 `remotion/props.json` is sample input for this Remotion project and may be committed when intentionally regenerated.

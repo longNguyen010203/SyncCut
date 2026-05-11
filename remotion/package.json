@@ -7,7 +7,8 @@
     "studio": "remotion studio src/index.ts",
     "typecheck": "tsc --noEmit",
     "still": "remotion still src/index.ts SyncCutVideo out/preview.png --frame=0",
-    "still:local": "remotion still src/index.ts SyncCutVideo out/preview.png --frame=0 --browser-executable=/usr/bin/google-chrome --chrome-mode=chrome-for-testing"
+    "still:local": "remotion still src/index.ts SyncCutVideo out/preview.png --frame=0 --browser-executable=/usr/bin/google-chrome --chrome-mode=chrome-for-testing",
+    "render:smoke:local": "remotion render src/index.ts SyncCutVideo out/smoke.mp4 --frames=0-149 --browser-executable=/usr/bin/google-chrome --chrome-mode=chrome-for-testing --concurrency=1 --timeout=60000"
   },
   "dependencies": {
     "react": "^18.2.0",
