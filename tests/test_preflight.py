@@ -118,6 +118,27 @@ def preflight(props: dict, tmp_path: Path):
     return inspect_preflight(props, tmp_path / "remotion" / "props.json")
 
 
+def write_public_file(public_dir: Path, public_path: str, content: bytes = b"asset") -> Path:
+    target = public_dir / public_path
+    target.parent.mkdir(parents=True, exist_ok=True)
+    target.write_bytes(content)
+    return target
+
+
+def write_default_audio_files(public_dir: Path) -> None:
+    write_public_file(public_dir, "audio/01_HOOK.mp3")
+    write_public_file(public_dir, "audio/02_BODY.mp3")
+
+
+def verified_preflight(props: dict, tmp_path: Path, public_dir: Path):
+    return inspect_preflight(
+        props,
+        tmp_path / "remotion" / "props.json",
+        verify_files=True,
+        public_dir=public_dir,
+    )
+
+
 def issue_codes(summary) -> tuple[list[str], list[str]]:
     return [issue.code for issue in summary.warnings], [issue.code for issue in summary.errors]
 
@@ -440,6 +461,293 @@ def test_file_helper_does_not_modify_props_file(tmp_path) -> None:
 
     assert summary.scenes == 3
     assert props_path.read_text(encoding="utf-8") == original
+
+
+def test_file_helper_verify_files_false_does_not_modify_props_file(tmp_path) -> None:
+    props = valid_props()
+    props_path = tmp_path / "remotion" / "props.json"
+    props_path.parent.mkdir(parents=True)
+    original = json.dumps(props, indent=2) + "\n"
+    props_path.write_text(original, encoding="utf-8")
+
+    summary = inspect_preflight_file(props_path, verify_files=False)
+
+    assert summary.scenes == 3
+    assert summary.verify_files is False
+    assert summary.file_errors == 0
+    assert props_path.read_text(encoding="utf-8") == original
+
+
+def test_verify_files_requires_public_dir_at_helper_level(tmp_path) -> None:
+    with pytest.raises(SyncCutError, match="--public-dir is required"):
+        inspect_preflight(valid_props(), tmp_path / "props.json", verify_files=True)
+
+
+def test_verify_existing_section_and_root_audio_files_have_no_file_error(tmp_path) -> None:
+    props = valid_props()
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "warning"
+    assert summary.verify_files is True
+    assert summary.public_dir == public_dir
+    assert summary.file_errors == 0
+    assert not any(issue.code.startswith("missing_public_file") for issue in summary.errors)
+
+
+def test_verify_existing_prepared_visual_scene_file_has_no_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+    props["scenes"][0]["visual"]["public_path"] = "visuals/scene_001.png"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+    write_public_file(public_dir, "visuals/scene_001.png", b"png")
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.visual_prepared == 1
+    assert summary.file_errors == 0
+    assert not any(issue.code == "missing_public_file" for issue in summary.errors)
+
+
+def test_verify_existing_root_visual_asset_file_has_no_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["assets"]["visuals"] = [
+        {
+            "scene_id": "scene_001",
+            "visual_type": "AI_VIDEO",
+            "public_path": "visuals/scene_001.png",
+            "asset_status": "prepared",
+            "asset_source": "local",
+        }
+    ]
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+    write_public_file(public_dir, "visuals/scene_001.png", b"png")
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.file_errors == 0
+    assert not any(issue.code == "missing_public_file" for issue in summary.errors)
+
+
+def test_missing_section_audio_file_is_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["sections"][0]["audio"]["public_path"] = "audio/missing-section.mp3"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert any(
+        issue.code == "missing_public_file"
+        and "sections[0].audio public_path audio/missing-section.mp3 missing under" in issue.message
+        for issue in summary.errors
+    )
+
+
+def test_missing_root_audio_file_is_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["assets"]["audio"][0]["public_path"] = "audio/missing-root.mp3"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert any(
+        issue.code == "missing_public_file"
+        and "assets.audio[0] public_path audio/missing-root.mp3 missing under" in issue.message
+        for issue in summary.errors
+    )
+
+
+def test_directory_instead_of_public_file_is_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["sections"][0]["audio"]["public_path"] = "audio/as-directory.mp3"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+    (public_dir / "audio" / "as-directory.mp3").mkdir(parents=True)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert any(issue.code == "public_path_is_directory" for issue in summary.errors)
+
+
+def test_absolute_public_path_is_invalid_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["sections"][0]["audio"]["public_path"] = str(tmp_path / "outside.mp3")
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert any(issue.code == "invalid_public_path" for issue in summary.errors)
+
+
+def test_parent_segment_public_path_is_invalid_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["sections"][0]["audio"]["public_path"] = "audio/../outside.mp3"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert any(issue.code == "invalid_public_path" for issue in summary.errors)
+
+
+def test_prepared_visual_scene_missing_file_is_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+    props["scenes"][0]["visual"]["public_path"] = "visuals/scene_001.png"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert any(
+        issue.code == "missing_public_file"
+        and "scene scene_001 AI_VIDEO public_path visuals/scene_001.png missing under" in issue.message
+        for issue in summary.errors
+    )
+
+
+def test_missing_visual_scene_remains_warning_without_file_error(tmp_path) -> None:
+    props = valid_props()
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "warning"
+    assert summary.file_errors == 0
+    assert [issue.code for issue in summary.warnings] == ["visual_missing", "visual_missing"]
+
+
+def test_unsupported_visual_path_does_not_get_duplicate_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+    props["scenes"][0]["visual"]["public_path"] = "assets/scene_001.gif"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 0
+    assert [issue.code for issue in summary.errors] == ["visual_unsupported"]
+
+
+def test_scene_audio_public_path_is_ignored_by_file_verification(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["audio"]["public_path"] = "/tmp/not-public.mp3"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.file_errors == 0
+    assert not any(issue.code == "invalid_public_path" for issue in summary.errors)
+
+
+def test_original_path_fields_outside_public_dir_are_ignored(tmp_path) -> None:
+    props = valid_props()
+    props["sections"][0]["audio"]["path"] = "/outside/source.mp3"
+    props["assets"]["audio"][0]["path"] = "/outside/source.mp3"
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.file_errors == 0
+    assert not any(issue.code == "invalid_public_path" for issue in summary.errors)
+
+
+def test_assets_visuals_missing_public_path_is_deterministic_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["assets"]["visuals"] = [{"scene_id": "scene_001", "visual_type": "AI_VIDEO"}]
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert summary.errors[-1].code == "invalid_public_path"
+    assert summary.errors[-1].message == "assets.visuals[0] public_path must be a non-empty string"
+
+
+def test_assets_visuals_malformed_value_is_deterministic_file_error(tmp_path) -> None:
+    props = valid_props()
+    props["assets"]["visuals"] = ["bad"]
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert summary.status == "error"
+    assert summary.file_errors == 1
+    assert summary.errors[-1].code == "invalid_public_path"
+    assert summary.errors[-1].message == "assets.visuals[0] public_path must be a non-empty string"
+
+
+def test_text_output_with_verification_includes_file_fields(tmp_path) -> None:
+    props = valid_props()
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+    output = format_preflight(summary)
+
+    assert "verify_files: true\n" in output
+    assert f"public_dir: {public_dir}\n" in output
+    assert "file_errors: 0\n" in output
+
+
+def test_json_output_with_verification_includes_file_fields(tmp_path) -> None:
+    props = valid_props()
+    public_dir = tmp_path / "remotion" / "public"
+    write_default_audio_files(public_dir)
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+    output = preflight_to_dict(summary)
+
+    assert output["verify_files"] is True
+    assert output["public_dir"] == str(public_dir)
+    assert output["file_errors"] == 0
+
+
+def test_file_error_ordering_is_deterministic(tmp_path) -> None:
+    props = valid_props()
+    props["sections"][0]["audio"]["public_path"] = "audio/missing-section.mp3"
+    props["assets"]["audio"][0]["public_path"] = "audio/missing-root.mp3"
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+    props["scenes"][0]["visual"]["public_path"] = "visuals/missing-scene.png"
+    props["assets"]["visuals"] = [{"public_path": "visuals/missing-root-visual.png"}]
+    public_dir = tmp_path / "remotion" / "public"
+    write_public_file(public_dir, "audio/02_BODY.mp3")
+
+    summary = verified_preflight(props, tmp_path, public_dir)
+
+    assert [issue.message for issue in summary.errors if issue.code == "missing_public_file"] == [
+        f"sections[0].audio public_path audio/missing-section.mp3 missing under {public_dir}",
+        f"assets.audio[0] public_path audio/missing-root.mp3 missing under {public_dir}",
+        f"scene scene_001 AI_VIDEO public_path visuals/missing-scene.png missing under {public_dir}",
+        f"assets.visuals[0] public_path visuals/missing-root-visual.png missing under {public_dir}",
+    ]
 
 
 def test_non_string_root_warning_is_structural_error(tmp_path) -> None:

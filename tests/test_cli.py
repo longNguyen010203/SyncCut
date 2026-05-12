@@ -324,6 +324,14 @@ def write_tiny_preflight_props(root: Path) -> Path:
     return props_json
 
 
+def write_preflight_public_audio(root: Path) -> Path:
+    public_dir = root / "remotion" / "public"
+    audio_path = public_dir / "audio" / "01_HOOK.mp3"
+    audio_path.parent.mkdir(parents=True, exist_ok=True)
+    audio_path.write_bytes(b"audio")
+    return public_dir
+
+
 def write_timeline_with_gap_warning(root: Path) -> Path:
     timeline_json = root / "timeline-with-gap.json"
     timeline_json.write_text(
@@ -841,6 +849,111 @@ def test_preflight_cli_json_exits_zero_and_prints_parseable_json(tmp_path) -> No
         }
     ]
     assert data["errors"] == []
+    assert "verify_files" not in data
+    assert "public_dir" not in data
+    assert "file_errors" not in data
+
+
+def test_preflight_cli_verify_files_exits_zero_and_prints_file_fields(tmp_path) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+    public_dir = write_preflight_public_audio(tmp_path)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "preflight",
+            str(props_json),
+            "--verify-files",
+            "--public-dir",
+            str(public_dir),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert f"Preflight: {props_json}" in result.output
+    assert "status: warning" in result.output
+    assert "verify_files: true" in result.output
+    assert f"public_dir: {public_dir}" in result.output
+    assert "file_errors: 0" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_preflight_cli_verify_files_json_exits_zero_and_prints_file_fields(tmp_path) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+    public_dir = write_preflight_public_audio(tmp_path)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "preflight",
+            str(props_json),
+            "--verify-files",
+            "--public-dir",
+            str(public_dir),
+            "--json",
+        ],
+    )
+
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert data["status"] == "warning"
+    assert data["verify_files"] is True
+    assert data["public_dir"] == str(public_dir)
+    assert data["file_errors"] == 0
+
+
+def test_preflight_cli_verify_files_missing_file_exits_nonzero_after_report(
+    tmp_path,
+) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+    public_dir = tmp_path / "remotion" / "public"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "preflight",
+            str(props_json),
+            "--verify-files",
+            "--public-dir",
+            str(public_dir),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert f"Preflight: {props_json}" in result.output
+    assert "status: error" in result.output
+    assert "file_errors: 2" in result.output
+    assert "error missing_public_file sections[0].audio public_path audio/01_HOOK.mp3" in result.output
+    assert "error missing_public_file assets.audio[0] public_path audio/01_HOOK.mp3" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_preflight_cli_verify_files_without_public_dir_fails_without_traceback(
+    tmp_path,
+) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+
+    result = CliRunner().invoke(app, ["preflight", str(props_json), "--verify-files"])
+
+    assert result.exit_code == 1
+    assert "Error: --public-dir is required when --verify-files is set" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_preflight_cli_public_dir_without_verify_files_fails_without_traceback(
+    tmp_path,
+) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+    public_dir = tmp_path / "remotion" / "public"
+
+    result = CliRunner().invoke(
+        app,
+        ["preflight", str(props_json), "--public-dir", str(public_dir)],
+    )
+
+    assert result.exit_code == 1
+    assert "Error: --public-dir can only be used with --verify-files" in result.output
+    assert "Traceback" not in result.output
 
 
 def test_preflight_cli_error_status_exits_nonzero_after_printing_report(tmp_path) -> None:
@@ -874,11 +987,54 @@ def test_preflight_cli_malformed_props_returns_error_without_traceback(tmp_path)
     assert "Traceback" not in result.output
 
 
+def test_preflight_cli_verify_files_malformed_props_returns_error_without_traceback(
+    tmp_path,
+) -> None:
+    props_json = tmp_path / "props.json"
+    props_json.write_text(json.dumps({"metadata": {}}), encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "preflight",
+            str(props_json),
+            "--verify-files",
+            "--public-dir",
+            str(tmp_path / "public"),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "scenes must be an array" in result.output
+    assert "Traceback" not in result.output
+
+
 def test_preflight_cli_read_only(tmp_path) -> None:
     props_json = write_tiny_preflight_props(tmp_path)
     original = props_json.read_text(encoding="utf-8")
 
     result = CliRunner().invoke(app, ["preflight", str(props_json)])
+
+    assert result.exit_code == 0
+    assert props_json.read_text(encoding="utf-8") == original
+
+
+def test_preflight_cli_verify_files_read_only(tmp_path) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+    public_dir = write_preflight_public_audio(tmp_path)
+    original = props_json.read_text(encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "preflight",
+            str(props_json),
+            "--verify-files",
+            "--public-dir",
+            str(public_dir),
+        ],
+    )
 
     assert result.exit_code == 0
     assert props_json.read_text(encoding="utf-8") == original

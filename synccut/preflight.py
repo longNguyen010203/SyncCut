@@ -33,9 +33,20 @@ class PreflightSummary:
     visual_unsupported: int
     warnings: list[PreflightIssue]
     errors: list[PreflightIssue]
+    verify_files: bool = False
+    public_dir: Path | None = None
+    file_errors: int = 0
 
 
-def inspect_preflight(props: dict[str, Any], props_path: Path) -> PreflightSummary:
+def inspect_preflight(
+    props: dict[str, Any],
+    props_path: Path,
+    verify_files: bool = False,
+    public_dir: Path | None = None,
+) -> PreflightSummary:
+    if verify_files and public_dir is None:
+        raise SyncCutError("--public-dir is required when verify_files is true")
+
     source_props = require_mapping(props, context=str(props_path))
     scenes = _require_array(source_props, "scenes", props_path)
     sections = _require_array(source_props, "sections", props_path)
@@ -96,6 +107,7 @@ def inspect_preflight(props: dict[str, Any], props_path: Path) -> PreflightSumma
 
     _scene_checks(scenes, composition_duration_frames=duration_frames, errors=errors)
 
+    visual_summary = None
     try:
         visual_summary = inspect_visual_asset_readiness(source_props, props_path)
     except SyncCutError as exc:
@@ -126,6 +138,18 @@ def inspect_preflight(props: dict[str, Any], props_path: Path) -> PreflightSumma
                     )
                 )
 
+    file_errors = 0
+    if verify_files:
+        verification_errors = _file_verification_checks(
+            source_props,
+            public_dir=public_dir,
+            scenes=scenes,
+            sections=sections,
+            visual_summary=visual_summary,
+        )
+        file_errors = len(verification_errors)
+        errors.extend(verification_errors)
+
     status = _status(warnings, errors)
     return PreflightSummary(
         props_path=props_path,
@@ -143,12 +167,24 @@ def inspect_preflight(props: dict[str, Any], props_path: Path) -> PreflightSumma
         visual_unsupported=visual_unsupported,
         warnings=warnings,
         errors=errors,
+        verify_files=verify_files,
+        public_dir=public_dir,
+        file_errors=file_errors,
     )
 
 
-def inspect_preflight_file(props_path: Path) -> PreflightSummary:
+def inspect_preflight_file(
+    props_path: Path,
+    verify_files: bool = False,
+    public_dir: Path | None = None,
+) -> PreflightSummary:
     props = load_remotion_props(props_path)
-    return inspect_preflight(props, props_path)
+    return inspect_preflight(
+        props,
+        props_path,
+        verify_files=verify_files,
+        public_dir=public_dir,
+    )
 
 
 def format_preflight(summary: PreflightSummary) -> str:
@@ -168,9 +204,16 @@ def format_preflight(summary: PreflightSummary) -> str:
         f"visual_unsupported: {summary.visual_unsupported}",
         f"warnings: {len(summary.warnings)}",
         f"errors: {len(summary.errors)}",
-        "",
-        "Warnings:",
     ]
+    if summary.verify_files:
+        lines.extend(
+            [
+                "verify_files: true",
+                f"public_dir: {summary.public_dir}",
+                f"file_errors: {summary.file_errors}",
+            ]
+        )
+    lines.extend(["", "Warnings:"])
     if summary.warnings:
         lines.extend(_format_issue(issue) for issue in summary.warnings)
     else:
@@ -186,7 +229,7 @@ def format_preflight(summary: PreflightSummary) -> str:
 
 
 def preflight_to_dict(summary: PreflightSummary) -> dict[str, Any]:
-    return {
+    data = {
         "path": str(summary.props_path),
         "status": summary.status,
         "scenes": summary.scenes,
@@ -203,6 +246,167 @@ def preflight_to_dict(summary: PreflightSummary) -> dict[str, Any]:
         "warnings": [_issue_to_dict(issue) for issue in summary.warnings],
         "errors": [_issue_to_dict(issue) for issue in summary.errors],
     }
+    if summary.verify_files:
+        data["verify_files"] = True
+        data["public_dir"] = str(summary.public_dir)
+        data["file_errors"] = summary.file_errors
+    return data
+
+
+def _file_verification_checks(
+    props: dict[str, Any],
+    *,
+    public_dir: Path | None,
+    scenes: list[Any],
+    sections: list[Any],
+    visual_summary: Any,
+) -> list[PreflightIssue]:
+    if public_dir is None:
+        raise SyncCutError("--public-dir is required when verify_files is true")
+
+    errors: list[PreflightIssue] = []
+
+    for index, section_value in enumerate(sections):
+        section = _optional_mapping(section_value)
+        if section is None:
+            continue
+        audio = _optional_mapping(section.get("audio"))
+        if audio is None:
+            continue
+        public_path = audio.get("public_path")
+        if _non_empty_string(public_path):
+            issue = _verify_public_file(
+                public_path,
+                public_dir,
+                context=f"sections[{index}].audio public_path",
+            )
+            if issue is not None:
+                errors.append(issue)
+
+    assets = _optional_mapping(props.get("assets"))
+    if assets is not None:
+        audio_entries = assets.get("audio")
+        if isinstance(audio_entries, list):
+            for index, entry_value in enumerate(audio_entries):
+                entry = _optional_mapping(entry_value)
+                if entry is None:
+                    continue
+                public_path = entry.get("public_path")
+                if _non_empty_string(public_path):
+                    issue = _verify_public_file(
+                        public_path,
+                        public_dir,
+                        context=f"assets.audio[{index}] public_path",
+                    )
+                    if issue is not None:
+                        errors.append(issue)
+
+    prepared_visual_scene_ids = {
+        item.scene_id
+        for item in visual_summary.items
+        if item.status == "prepared" and item.public_path is not None
+    } if visual_summary is not None else set()
+    for scene_value in scenes:
+        scene = _optional_mapping(scene_value)
+        if scene is None:
+            continue
+        scene_id = scene.get("id")
+        if scene_id not in prepared_visual_scene_ids:
+            continue
+        visual_type = scene.get("visual_type")
+        visual = _optional_mapping(scene.get("visual"))
+        if visual is None:
+            continue
+        public_path = visual.get("public_path")
+        if _non_empty_string(public_path):
+            issue = _verify_public_file(
+                public_path,
+                public_dir,
+                context=f"scene {scene_id} {visual_type} public_path",
+            )
+            if issue is not None:
+                errors.append(issue)
+
+    if assets is not None:
+        visual_entries = assets.get("visuals")
+        if isinstance(visual_entries, list):
+            for index, entry_value in enumerate(visual_entries):
+                context = f"assets.visuals[{index}] public_path"
+                entry = _optional_mapping(entry_value)
+                if entry is None:
+                    errors.append(_error("invalid_public_path", f"{context} must be a non-empty string"))
+                    continue
+                public_path = entry.get("public_path")
+                if not _non_empty_string(public_path):
+                    errors.append(_error("invalid_public_path", f"{context} must be a non-empty string"))
+                    continue
+                issue = _verify_public_file(public_path, public_dir, context=context)
+                if issue is not None:
+                    errors.append(issue)
+        elif visual_entries is not None:
+            errors.append(_error("invalid_public_path", "assets.visuals must be an array"))
+
+    return errors
+
+
+def _verify_public_file(
+    public_path: Any,
+    public_dir: Path,
+    *,
+    context: str,
+) -> PreflightIssue | None:
+    resolved = _resolve_public_path(public_path, public_dir, context=context)
+    if isinstance(resolved, PreflightIssue):
+        return resolved
+    if not resolved.exists():
+        return _error(
+            "missing_public_file",
+            f"{context} {public_path} missing under {public_dir}",
+        )
+    if resolved.is_dir():
+        return _error(
+            "public_path_is_directory",
+            f"{context} {public_path} is a directory under {public_dir}",
+        )
+    if not resolved.is_file():
+        return _error(
+            "missing_public_file",
+            f"{context} {public_path} is not a regular file under {public_dir}",
+        )
+    return None
+
+
+def _resolve_public_path(
+    public_path: Any,
+    public_dir: Path,
+    *,
+    context: str,
+) -> Path | PreflightIssue:
+    if not _non_empty_string(public_path):
+        return _error("invalid_public_path", f"{context} must be a non-empty string")
+
+    relative_path = Path(public_path)
+    if relative_path.is_absolute():
+        return _error(
+            "invalid_public_path",
+            f"{context} {public_path} is not a relative public path",
+        )
+    if ".." in relative_path.parts:
+        return _error(
+            "invalid_public_path",
+            f"{context} {public_path} must not contain ..",
+        )
+
+    public_root = public_dir.resolve(strict=False)
+    candidate = (public_root / relative_path).resolve(strict=False)
+    try:
+        candidate.relative_to(public_root)
+    except ValueError:
+        return _error(
+            "public_path_outside_public_dir",
+            f"{context} {public_path} resolves outside {public_dir}",
+        )
+    return candidate
 
 
 def _metadata_checks(

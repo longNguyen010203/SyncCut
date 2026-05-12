@@ -179,10 +179,27 @@ def preflight_cmd(
     json_output: Annotated[
         bool, typer.Option("--json", help="Print machine-readable JSON.")
     ] = False,
+    verify_files: Annotated[
+        bool, typer.Option("--verify-files", help="Verify prepared public files exist.")
+    ] = False,
+    public_dir: Annotated[
+        Path | None, typer.Option("--public-dir", help="Remotion public directory.")
+    ] = None,
 ) -> None:
     """Report full-render readiness from Remotion props."""
+    if verify_files and public_dir is None:
+        typer.echo("Error: --public-dir is required when --verify-files is set", err=True)
+        raise typer.Exit(1)
+    if public_dir is not None and not verify_files:
+        typer.echo("Error: --public-dir can only be used with --verify-files", err=True)
+        raise typer.Exit(1)
+
     try:
-        summary = inspect_preflight_file(props_json)
+        summary = inspect_preflight_file(
+            props_json,
+            verify_files=verify_files,
+            public_dir=public_dir,
+        )
     except SyncCutError as exc:
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(1) from exc
