@@ -5,6 +5,7 @@ from typing import Annotated
 import typer
 
 from synccut.alignment_loader import load_section_assets
+from synccut.preflight import format_preflight, inspect_preflight_file, preflight_to_dict
 from synccut.remotion_assets import prepare_remotion_assets_file
 from synccut.remotion_exporter import export_remotion_props_file
 from synccut.scenes_loader import load_scenes
@@ -170,6 +171,29 @@ def inspect_visual_assets_cmd(
         return
 
     typer.echo(format_visual_asset_readiness(summary), nl=False)
+
+
+@app.command("preflight")
+def preflight_cmd(
+    props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
+    json_output: Annotated[
+        bool, typer.Option("--json", help="Print machine-readable JSON.")
+    ] = False,
+) -> None:
+    """Report full-render readiness from Remotion props."""
+    try:
+        summary = inspect_preflight_file(props_json)
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    if json_output:
+        typer.echo(json.dumps(preflight_to_dict(summary), indent=2))
+    else:
+        typer.echo(format_preflight(summary), nl=False)
+
+    if summary.status == "error":
+        raise typer.Exit(1)
 
 
 if __name__ == "__main__":

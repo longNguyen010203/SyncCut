@@ -244,6 +244,86 @@ def write_tiny_visual_props(root: Path) -> Path:
     return props_json
 
 
+def write_tiny_preflight_props(root: Path) -> Path:
+    props_json = root / "remotion" / "props.json"
+    props_json.parent.mkdir(parents=True, exist_ok=True)
+    props_json.write_text(
+        json.dumps(
+            {
+                "metadata": {
+                    "generated_by": "synccut export-remotion",
+                    "source_timeline": "timeline.json",
+                    "fps": 30,
+                    "duration_sec": 2.0,
+                    "duration_frames": 60,
+                    "total_scenes": 2,
+                    "total_sections": 1,
+                },
+                "composition": {
+                    "id": "SyncCutVideo",
+                    "width": 1920,
+                    "height": 1080,
+                    "fps": 30,
+                    "duration_frames": 60,
+                },
+                "sections": [
+                    {
+                        "section_key": "01_HOOK",
+                        "section": "HOOK",
+                        "section_order": 1,
+                        "start_frame": 0,
+                        "end_frame": 60,
+                        "duration_frames": 60,
+                        "audio": {
+                            "path": "examples/audio/01_HOOK.mp3",
+                            "public_path": "audio/01_HOOK.mp3",
+                        },
+                    }
+                ],
+                "scenes": [
+                    {
+                        "id": "scene_001",
+                        "scene_order": 1,
+                        "section_key": "01_HOOK",
+                        "start_frame": 0,
+                        "end_frame": 30,
+                        "duration_frames": 30,
+                        "visual_type": "AI_VIDEO",
+                        "visual": {"type": "AI_VIDEO", "prompt": "Prompt", "data": None},
+                        "dialogue": {"text": "Hello.", "paragraphs": ["Hello."]},
+                        "audio": {"path": "examples/audio/01_HOOK.mp3"},
+                    },
+                    {
+                        "id": "scene_002",
+                        "scene_order": 2,
+                        "section_key": "01_HOOK",
+                        "start_frame": 30,
+                        "end_frame": 60,
+                        "duration_frames": 30,
+                        "visual_type": "TABLE",
+                        "visual": {"type": "TABLE", "prompt": "Table", "data": {"rows": []}},
+                        "dialogue": {"text": "Table.", "paragraphs": ["Table."]},
+                        "audio": {"path": "examples/audio/01_HOOK.mp3"},
+                    },
+                ],
+                "assets": {
+                    "audio": [
+                        {
+                            "section_key": "01_HOOK",
+                            "path": "examples/audio/01_HOOK.mp3",
+                            "public_path": "audio/01_HOOK.mp3",
+                        }
+                    ],
+                    "visuals": [],
+                },
+                "warnings": [],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return props_json
+
+
 def write_timeline_with_gap_warning(root: Path) -> Path:
     timeline_json = root / "timeline-with-gap.json"
     timeline_json.write_text(
@@ -707,3 +787,98 @@ def test_inspect_visual_assets_cli_is_read_only(tmp_path) -> None:
 
     assert result.exit_code == 0
     assert props_json.read_text(encoding="utf-8") == before
+
+
+def test_preflight_cli_warning_status_exits_zero_and_prints_stable_text(tmp_path) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+
+    result = CliRunner().invoke(app, ["preflight", str(props_json)])
+
+    assert result.exit_code == 0
+    assert result.output == (
+        f"Preflight: {props_json}\n"
+        "status: warning\n"
+        "scenes: 2\n"
+        "sections: 1\n"
+        "duration_sec: 2.0\n"
+        "duration_frames: 60\n"
+        "fps: 30\n"
+        "audio_prepared: 1\n"
+        "audio_missing_public_path: 0\n"
+        "visual_target_scenes: 1\n"
+        "visual_prepared: 0\n"
+        "visual_missing: 1\n"
+        "visual_unsupported: 0\n"
+        "warnings: 1\n"
+        "errors: 0\n"
+        "\n"
+        "Warnings:\n"
+        "warning visual_missing scene_001 AI_VIDEO missing visual asset; placeholder will render\n"
+        "\n"
+        "Errors:\n"
+        "none\n"
+    )
+
+
+def test_preflight_cli_json_exits_zero_and_prints_parseable_json(tmp_path) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+
+    result = CliRunner().invoke(app, ["preflight", str(props_json), "--json"])
+
+    assert result.exit_code == 0
+    data = json.loads(result.output)
+    assert data["path"] == str(props_json)
+    assert data["status"] == "warning"
+    assert data["scenes"] == 2
+    assert data["sections"] == 1
+    assert data["audio_prepared"] == 1
+    assert data["visual_missing"] == 1
+    assert data["warnings"] == [
+        {
+            "level": "warning",
+            "code": "visual_missing",
+            "message": "scene_001 AI_VIDEO missing visual asset; placeholder will render",
+        }
+    ]
+    assert data["errors"] == []
+
+
+def test_preflight_cli_error_status_exits_nonzero_after_printing_report(tmp_path) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+    data = json.loads(props_json.read_text(encoding="utf-8"))
+    del data["sections"][0]["audio"]["public_path"]
+    props_json.write_text(json.dumps(data), encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["preflight", str(props_json)])
+
+    assert result.exit_code == 1
+    assert f"Preflight: {props_json}" in result.output
+    assert "status: error" in result.output
+    assert "audio_missing_public_path: 1" in result.output
+    assert (
+        "error missing_audio_public_path "
+        "sections[0].audio.public_path must be a non-empty string"
+    ) in result.output
+    assert "Traceback" not in result.output
+
+
+def test_preflight_cli_malformed_props_returns_error_without_traceback(tmp_path) -> None:
+    props_json = tmp_path / "props.json"
+    props_json.write_text(json.dumps({"metadata": {}}), encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["preflight", str(props_json)])
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "scenes must be an array" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_preflight_cli_read_only(tmp_path) -> None:
+    props_json = write_tiny_preflight_props(tmp_path)
+    original = props_json.read_text(encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["preflight", str(props_json)])
+
+    assert result.exit_code == 0
+    assert props_json.read_text(encoding="utf-8") == original
