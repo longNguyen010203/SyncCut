@@ -12,7 +12,12 @@ from synccut.timeline_builder import build_timeline as build_timeline_data
 from synccut.timeline_inspector import build_timeline_overview
 from synccut.timeline_validator import load_timeline_json, validate_timeline
 from synccut.validators import SyncCutError
-from synccut.visual_assets import prepare_visual_assets_file
+from synccut.visual_assets import (
+    format_visual_asset_readiness,
+    inspect_visual_asset_readiness_file,
+    prepare_visual_assets_file,
+    visual_asset_readiness_to_dict,
+)
 
 app = typer.Typer(help="Build structured video production timelines.")
 
@@ -144,6 +149,27 @@ def prepare_visual_assets_cmd(
     typer.echo(f"visual_missing: {result.missing}")
     typer.echo(f"visual_assets: {len(result.visual_assets)}")
     typer.echo(f"public_dir: {out_dir}")
+
+
+@app.command("inspect-visual-assets")
+def inspect_visual_assets_cmd(
+    props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
+    json_output: Annotated[
+        bool, typer.Option("--json", help="Print machine-readable JSON.")
+    ] = False,
+) -> None:
+    """Report AI_VIDEO and B_ROLL visual asset readiness from Remotion props."""
+    try:
+        summary = inspect_visual_asset_readiness_file(props_json)
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    if json_output:
+        typer.echo(json.dumps(visual_asset_readiness_to_dict(summary), indent=2))
+        return
+
+    typer.echo(format_visual_asset_readiness(summary), nl=False)
 
 
 if __name__ == "__main__":

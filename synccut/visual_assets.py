@@ -35,6 +35,23 @@ class VisualAssetPrepareResult:
     visual_assets: list[PreparedVisualAsset]
 
 
+@dataclass(frozen=True)
+class VisualAssetReadinessItem:
+    scene_id: str
+    visual_type: str
+    status: str
+    public_path: str | None
+
+
+@dataclass(frozen=True)
+class VisualAssetReadinessSummary:
+    props_path: Path
+    items: list[VisualAssetReadinessItem]
+    prepared: int
+    missing: int
+    unsupported: int
+
+
 def load_visual_props(path: Path) -> dict[str, Any]:
     try:
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -120,7 +137,115 @@ def prepare_visual_assets_file(
     return result
 
 
+def inspect_visual_asset_readiness(
+    props: dict[str, Any], props_path: Path
+) -> VisualAssetReadinessSummary:
+    source_props = require_mapping(props, context=str(props_path))
+    scenes = _target_scene_entries(source_props, props_path)
+
+    items: list[VisualAssetReadinessItem] = []
+    prepared = 0
+    missing = 0
+    unsupported = 0
+
+    for scene in scenes:
+        visual = require_mapping(scene["visual"], context=f"{scene['context']}.visual")
+        public_path_value = visual.get("public_path")
+        valid_public_path = classify_visual_public_path(public_path_value)
+        status = _readiness_status(visual.get("asset_status"), public_path_value, valid_public_path)
+        if status == "prepared":
+            prepared += 1
+        elif status == "unsupported":
+            unsupported += 1
+        else:
+            missing += 1
+
+        items.append(
+            VisualAssetReadinessItem(
+                scene_id=scene["id"],
+                visual_type=scene["visual_type"],
+                status=status,
+                public_path=public_path_value if isinstance(public_path_value, str) else None,
+            )
+        )
+
+    return VisualAssetReadinessSummary(
+        props_path=props_path,
+        items=items,
+        prepared=prepared,
+        missing=missing,
+        unsupported=unsupported,
+    )
+
+
+def inspect_visual_asset_readiness_file(props_path: Path) -> VisualAssetReadinessSummary:
+    props = load_visual_props(props_path)
+    return inspect_visual_asset_readiness(props, props_path)
+
+
+def format_visual_asset_readiness(summary: VisualAssetReadinessSummary) -> str:
+    lines = [
+        f"Visual assets: {summary.props_path}",
+        f"target_scenes: {len(summary.items)}",
+        f"prepared: {summary.prepared}",
+        f"missing: {summary.missing}",
+        f"unsupported: {summary.unsupported}",
+    ]
+    if summary.items:
+        lines.append("")
+        for item in summary.items:
+            public_path = item.public_path if item.public_path is not None else "-"
+            lines.append(f"{item.scene_id} {item.visual_type} {item.status} {public_path}")
+    return "\n".join(lines) + "\n"
+
+
+def visual_asset_readiness_to_dict(
+    summary: VisualAssetReadinessSummary,
+) -> dict[str, Any]:
+    return {
+        "path": str(summary.props_path),
+        "target_scenes": len(summary.items),
+        "prepared": summary.prepared,
+        "missing": summary.missing,
+        "unsupported": summary.unsupported,
+        "items": [
+            {
+                "scene_id": item.scene_id,
+                "visual_type": item.visual_type,
+                "status": item.status,
+                "public_path": item.public_path,
+            }
+            for item in summary.items
+        ],
+    }
+
+
+def classify_visual_public_path(value: Any) -> str | None:
+    if not isinstance(value, str):
+        return None
+
+    public_path = value.strip()
+    if not public_path or not public_path.startswith("visuals/") or ".." in public_path:
+        return None
+
+    suffix = Path(public_path).suffix.lower()
+    if suffix not in SUPPORTED_VISUAL_EXTENSIONS:
+        return None
+    return public_path
+
+
 def _target_scenes(props: dict[str, Any], props_path: Path) -> list[dict[str, Any]]:
+    return [
+        {
+            "id": scene["id"],
+            "visual_type": scene["visual_type"],
+            "scene_order": scene.get("scene_order"),
+        }
+        for scene in _target_scene_entries(props, props_path)
+    ]
+
+
+def _target_scene_entries(props: dict[str, Any], props_path: Path) -> list[dict[str, Any]]:
     scenes_value = props.get("scenes")
     if not isinstance(scenes_value, list):
         raise SyncCutError(f"{props_path}: scenes must be an array")
@@ -145,10 +270,25 @@ def _target_scenes(props: dict[str, Any], props_path: Path) -> list[dict[str, An
                 "id": scene_id,
                 "visual_type": visual_type,
                 "scene_order": scene.get("scene_order"),
+                "visual": visual,
+                "context": context,
             }
         )
 
     return scenes
+
+
+def _readiness_status(
+    asset_status: Any, public_path_value: Any, valid_public_path: str | None
+) -> str:
+    public_path_present = isinstance(public_path_value, str) and bool(public_path_value.strip())
+    if asset_status == "unsupported":
+        return "unsupported"
+    if asset_status == "prepared":
+        return "prepared" if valid_public_path is not None else "unsupported"
+    if public_path_present and valid_public_path is None:
+        return "unsupported"
+    return "missing"
 
 
 def _prepare_scene_asset(

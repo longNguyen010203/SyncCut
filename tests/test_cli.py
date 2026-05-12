@@ -633,3 +633,77 @@ def test_prepare_visual_assets_cli_fails_on_duplicate_supported_files(tmp_path) 
     assert "Error:" in result.output
     assert "multiple supported visual assets for scene_001" in result.output
     assert "Traceback" not in result.output
+
+
+def test_inspect_visual_assets_cli_success_prints_stable_text_summary_and_rows(
+    tmp_path,
+) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    data = json.loads(props_json.read_text(encoding="utf-8"))
+    data["scenes"][0]["visual"]["asset_status"] = "prepared"
+    data["scenes"][0]["visual"]["public_path"] = "visuals/scene_001.png"
+    props_json.write_text(json.dumps(data), encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["inspect-visual-assets", str(props_json)])
+
+    assert result.exit_code == 0
+    assert result.output == (
+        f"Visual assets: {props_json}\n"
+        "target_scenes: 1\n"
+        "prepared: 1\n"
+        "missing: 0\n"
+        "unsupported: 0\n"
+        "\n"
+        "scene_001 AI_VIDEO prepared visuals/scene_001.png\n"
+    )
+
+
+def test_inspect_visual_assets_cli_json_prints_parseable_counts_and_items(
+    tmp_path,
+) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    data = json.loads(props_json.read_text(encoding="utf-8"))
+    data["scenes"][0]["visual"]["public_path"] = "assets/scene_001.gif"
+    props_json.write_text(json.dumps(data), encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["inspect-visual-assets", str(props_json), "--json"])
+
+    assert result.exit_code == 0
+    output = json.loads(result.output)
+    assert output == {
+        "path": str(props_json),
+        "target_scenes": 1,
+        "prepared": 0,
+        "missing": 0,
+        "unsupported": 1,
+        "items": [
+            {
+                "scene_id": "scene_001",
+                "visual_type": "AI_VIDEO",
+                "status": "unsupported",
+                "public_path": "assets/scene_001.gif",
+            }
+        ],
+    }
+
+
+def test_inspect_visual_assets_cli_fails_on_malformed_props(tmp_path) -> None:
+    props_json = tmp_path / "props.json"
+    props_json.write_text(json.dumps({"metadata": {}}), encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["inspect-visual-assets", str(props_json)])
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "scenes must be an array" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_inspect_visual_assets_cli_is_read_only(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    before = props_json.read_text(encoding="utf-8")
+
+    result = CliRunner().invoke(app, ["inspect-visual-assets", str(props_json)])
+
+    assert result.exit_code == 0
+    assert props_json.read_text(encoding="utf-8") == before

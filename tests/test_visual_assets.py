@@ -5,6 +5,12 @@ import pytest
 
 from synccut.validators import SyncCutError
 from synccut.visual_assets import prepare_visual_assets, prepare_visual_assets_file
+from synccut.visual_assets import (
+    format_visual_asset_readiness,
+    inspect_visual_asset_readiness,
+    inspect_visual_asset_readiness_file,
+    visual_asset_readiness_to_dict,
+)
 
 
 def write_asset(path: Path, content: bytes = b"visual") -> Path:
@@ -202,3 +208,205 @@ def test_prepare_visual_assets_file_writes_two_space_json_with_trailing_newline(
     written = json.loads(text)
     assert written["scenes"][0]["visual"]["public_path"] == "visuals/scene_001.png"
     assert result.copied == 1
+
+
+def readiness(props: dict, tmp_path: Path):
+    return inspect_visual_asset_readiness(props, tmp_path / "remotion" / "props.json")
+
+
+def test_clean_props_with_ai_video_and_b_roll_no_public_paths_reports_missing(tmp_path) -> None:
+    summary = readiness(valid_props(), tmp_path)
+
+    assert summary.prepared == 0
+    assert summary.missing == 2
+    assert summary.unsupported == 0
+    assert [item.status for item in summary.items] == ["missing", "missing"]
+
+
+def test_prepared_requires_asset_status_prepared_plus_valid_public_path(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+    props["scenes"][0]["visual"]["public_path"] = "visuals/scene_001.png"
+
+    summary = readiness(props, tmp_path)
+
+    assert summary.prepared == 1
+    assert summary.items[0].status == "prepared"
+    assert summary.items[0].public_path == "visuals/scene_001.png"
+
+
+def test_asset_status_prepared_with_missing_public_path_reports_unsupported(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+
+    summary = readiness(props, tmp_path)
+
+    assert summary.unsupported == 1
+    assert summary.items[0].status == "unsupported"
+    assert summary.items[0].public_path is None
+
+
+def test_asset_status_unsupported_reports_unsupported(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "unsupported"
+
+    summary = readiness(props, tmp_path)
+
+    assert summary.unsupported == 1
+    assert summary.items[0].status == "unsupported"
+
+
+def test_outside_visuals_public_path_reports_unsupported(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["public_path"] = "assets/scene_001.png"
+
+    summary = readiness(props, tmp_path)
+
+    assert summary.items[0].status == "unsupported"
+    assert summary.items[0].public_path == "assets/scene_001.png"
+
+
+def test_public_path_containing_dot_dot_reports_unsupported(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["public_path"] = "visuals/../scene_001.png"
+
+    summary = readiness(props, tmp_path)
+
+    assert summary.items[0].status == "unsupported"
+
+
+def test_unsupported_extension_reports_unsupported(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["public_path"] = "visuals/scene_001.gif"
+
+    summary = readiness(props, tmp_path)
+
+    assert summary.items[0].status == "unsupported"
+
+
+def test_supported_extensions_are_accepted_case_insensitively(tmp_path) -> None:
+    extensions = [".PNG", ".JPG", ".JPEG", ".WEBP", ".MP4", ".WEBM", ".MOV"]
+    for extension in extensions:
+        props = valid_props()
+        props["scenes"][0]["visual"]["asset_status"] = "prepared"
+        props["scenes"][0]["visual"]["public_path"] = f"visuals/scene_001{extension}"
+
+        summary = readiness(props, tmp_path)
+
+        assert summary.items[0].status == "prepared"
+
+
+def test_non_target_visual_types_are_ignored(tmp_path) -> None:
+    summary = readiness(valid_props(), tmp_path)
+
+    assert [item.scene_id for item in summary.items] == ["scene_001", "scene_002"]
+
+
+def test_scene_order_is_preserved(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0], props["scenes"][1] = props["scenes"][1], props["scenes"][0]
+
+    summary = readiness(props, tmp_path)
+
+    assert [item.scene_id for item in summary.items] == ["scene_002", "scene_001"]
+
+
+def test_assets_visuals_does_not_affect_scene_readiness_when_scene_fields_are_missing(
+    tmp_path,
+) -> None:
+    props = valid_props()
+    props["assets"]["visuals"] = [
+        {
+            "scene_id": "scene_001",
+            "visual_type": "AI_VIDEO",
+            "public_path": "visuals/scene_001.png",
+            "asset_status": "prepared",
+            "asset_source": "local",
+        }
+    ]
+
+    summary = readiness(props, tmp_path)
+
+    assert summary.items[0].status == "missing"
+
+
+def test_formatted_text_output_is_stable(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+    props["scenes"][0]["visual"]["public_path"] = "visuals/scene_001.png"
+    props["scenes"][1]["visual"]["public_path"] = "assets/scene_002.gif"
+
+    summary = readiness(props, tmp_path)
+
+    assert format_visual_asset_readiness(summary) == (
+        f"Visual assets: {tmp_path / 'remotion' / 'props.json'}\n"
+        "target_scenes: 2\n"
+        "prepared: 1\n"
+        "missing: 0\n"
+        "unsupported: 1\n"
+        "\n"
+        "scene_001 AI_VIDEO prepared visuals/scene_001.png\n"
+        "scene_002 B_ROLL unsupported assets/scene_002.gif\n"
+    )
+
+
+def test_formatted_text_output_with_zero_target_scenes_has_summary_only(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"] = [props["scenes"][2]]
+
+    summary = readiness(props, tmp_path)
+
+    assert format_visual_asset_readiness(summary) == (
+        f"Visual assets: {tmp_path / 'remotion' / 'props.json'}\n"
+        "target_scenes: 0\n"
+        "prepared: 0\n"
+        "missing: 0\n"
+        "unsupported: 0\n"
+    )
+
+
+def test_json_dict_output_is_deterministic(tmp_path) -> None:
+    props = valid_props()
+    props["scenes"][0]["visual"]["asset_status"] = "prepared"
+    props["scenes"][0]["visual"]["public_path"] = "visuals/scene_001.png"
+
+    summary = readiness(props, tmp_path)
+
+    assert visual_asset_readiness_to_dict(summary) == {
+        "path": str(tmp_path / "remotion" / "props.json"),
+        "target_scenes": 2,
+        "prepared": 1,
+        "missing": 1,
+        "unsupported": 0,
+        "items": [
+            {
+                "scene_id": "scene_001",
+                "visual_type": "AI_VIDEO",
+                "status": "prepared",
+                "public_path": "visuals/scene_001.png",
+            },
+            {
+                "scene_id": "scene_002",
+                "visual_type": "B_ROLL",
+                "status": "missing",
+                "public_path": None,
+            },
+        ],
+    }
+
+
+def test_malformed_props_missing_scenes_fails_clearly(tmp_path) -> None:
+    with pytest.raises(SyncCutError, match="scenes must be an array"):
+        readiness({"assets": {}}, tmp_path)
+
+
+def test_file_helper_does_not_modify_props_file(tmp_path) -> None:
+    props_path = tmp_path / "remotion" / "props.json"
+    props_path.parent.mkdir(parents=True)
+    original = json.dumps(valid_props(), indent=2) + "\n"
+    props_path.write_text(original, encoding="utf-8")
+
+    summary = inspect_visual_asset_readiness_file(props_path)
+
+    assert summary.missing == 2
+    assert props_path.read_text(encoding="utf-8") == original
