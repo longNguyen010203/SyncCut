@@ -42,6 +42,13 @@ Supported extensions:
 
 Use exactly one supported asset per `scene_id`. Duplicate supported files for the same scene, such as both `assets/visuals/scene_003.mp4` and `assets/visuals/scene_003.png`, should make `prepare-visual-assets` fail until the duplicate is resolved.
 
+Status values in this manifest:
+
+- `prepared-local`: a local file has been placed, copied into `remotion/public/visuals/`, and validated by `prepare-visual-assets`, `inspect-visual-assets`, and verified preflight.
+- `planned`: selected for the first real local asset subset.
+- `optional-planned`: recommended next target if the first subset expands from three scenes to five scenes.
+- `needed`: known target scene, not yet selected for the first subset.
+
 ## Workflow Commands
 
 Regenerate props and prepared audio from the repository root:
@@ -74,11 +81,11 @@ Verify prepared public files:
 
 | scene_id | section_key | visual_type | recommended_filename | status | prompt_summary | notes |
 | --- | --- | --- | --- | --- | --- | --- |
-| `scene_001` | `01_HOOK` | `AI_VIDEO` | `assets/visuals/scene_001.mp4` | needed | Silicon wafer rotating under blue cleanroom light with reflected engineers. | External AI/video production candidate; still fallback can be `scene_001.png`. |
-| `scene_003` | `01_HOOK` | `B_ROLL` | `assets/visuals/scene_003.mp4` | needed | TSMC Hsinchu campus aerial at dusk with fabrication halls and coastline. | Manually sourced/licensed footage or local still; no download through SyncCut. |
-| `scene_004` | `02_INTRO` | `B_ROLL` | `assets/visuals/scene_004.mp4` | needed | Montage linking NVIDIA, iPhone launch, satellite, and self-driving car imagery. | Manually assembled licensed/local montage outside SyncCut. |
-| `scene_006` | `02_INTRO` | `B_ROLL` | `assets/visuals/scene_006.mp4` | needed | Grain of sand in hand cutting to a gleaming silicon wafer. | Local/staged macro footage or licensed stock outside SyncCut. |
-| `scene_008` | `03_MECHANISM_1` | `AI_VIDEO` | `assets/visuals/scene_008.mp4` | needed | Stylized 1987 handshake over a contract in Hsinchu. | External reenactment/generation candidate; avoid claiming archival authenticity unless sourced. |
+| `scene_001` | `01_HOOK` | `AI_VIDEO` | `assets/visuals/scene_001.mp4` | prepared-local | Silicon wafer rotating under blue cleanroom light with reflected engineers. | Actual filename: `assets/visuals/scene_001.mp4`. Provenance: unknown-local. Video preferred and validated locally. Production direction: close macro wafer shot with cleanroom reflections and slow controlled motion. |
+| `scene_003` | `01_HOOK` | `B_ROLL` | `assets/visuals/scene_003.mp4` | prepared-local | TSMC Hsinchu campus aerial at dusk with fabrication halls and coastline. | Actual filename: `assets/visuals/scene_003.mp4`. Provenance: unknown-local. Video preferred and validated locally. Production direction: wide establishing campus/fab exterior with dusk lighting and geographic context. |
+| `scene_004` | `02_INTRO` | `B_ROLL` | `assets/visuals/scene_004.mp4` | prepared-local | Montage linking NVIDIA, iPhone launch, satellite, and self-driving car imagery. | Actual filename: `assets/visuals/scene_004.mp4`. Provenance: unknown-local. Video preferred and validated locally. Production direction: concise news/product montage that visually connects advanced chips to consumer, defense, and autonomous systems. |
+| `scene_006` | `02_INTRO` | `B_ROLL` | `assets/visuals/scene_006.mp4` | optional-planned | Grain of sand in hand cutting to a gleaming silicon wafer. | Next recommended target after the first three. Video preferred. Provenance TBD: original/manual, external-generated, or licensed/manual-source. Production direction: tactile sand-to-wafer contrast with clean macro lighting. |
+| `scene_008` | `03_MECHANISM_1` | `AI_VIDEO` | `assets/visuals/scene_008.mp4` | optional-planned | Stylized 1987 handshake over a contract in Hsinchu. | Next recommended target after the first three. Video preferred. Provenance TBD: original/manual, external-generated, or licensed/manual-source. Production direction: clearly stylized historical reenactment; avoid claiming archival authenticity unless sourced. |
 | `scene_010` | `03_MECHANISM_1` | `B_ROLL` | `assets/visuals/scene_010.mp4` | needed | Whiteboard diagrams separating design from manufacturing, chip design office. | Can be staged/local office footage or simple motion graphic. |
 | `scene_013` | `04_MECHANISM_2` | `AI_VIDEO` | `assets/visuals/scene_013.mp4` | needed | Abstract transistor shrinking from visible scale to nanometers with node countdown. | Motion graphic candidate created outside SyncCut. |
 | `scene_015` | `04_MECHANISM_2` | `B_ROLL` | `assets/visuals/scene_015.mp4` | needed | Semiconductor cleanroom with engineers in bunny suits and large machines. | Use licensed cleanroom footage or approved local material. |
@@ -93,6 +100,8 @@ Verify prepared public files:
 | `scene_033` | `07_CONCLUSION` | `AI_VIDEO` | `assets/visuals/scene_033.mp4` | needed | Final cleanroom wafer shot reflecting overhead lights and fading to black. | External AI/video production candidate; still fallback can be `scene_033.png`. |
 
 ## Production Notes
+
+`scene_005` and `scene_007` are intentionally not local visual asset targets. They are `CHART` and `TABLE` scenes rendered from structured `visual.data`, so `prepare-visual-assets` will not copy files for them.
 
 AI_VIDEO assets can later be generated externally by Long or another tool, then saved locally under `assets/visuals/` using the filenames above. SyncCut does not generate those files.
 
