@@ -55,6 +55,31 @@ This renders frames `0-149` to `out/smoke.mp4`. At 30 fps, that is 150 frames, o
 
 This smoke clip is not the final MP4. Do not commit generated output under `out/`.
 
+## Segment Render
+
+Use this for a longer local validation pass before any future final render. From the repository root, run verified preflight first:
+
+```bash
+.venv/bin/synccut preflight remotion/props.json --verify-files --public-dir remotion/public
+```
+
+Then render the fixed segment:
+
+```bash
+cd remotion
+npm run render:segment:local
+```
+
+This writes `out/segment.mp4` and renders frames `0-899`. At 30 fps, that is 900 frames, or 30 seconds. The command uses local Chrome at `/usr/bin/google-chrome` with `--chrome-mode=chrome-for-testing`, and may require browser launch permission in sandboxed environments.
+
+This segment clip is not the final MP4. Do not commit `out/segment.mp4`.
+
+For custom frame ranges, run the Remotion CLI directly instead of appending duplicate npm args:
+
+```bash
+./node_modules/.bin/remotion render src/index.ts SyncCutVideo out/segment-900-1799.mp4 --frames=900-1799 --browser-executable=/usr/bin/google-chrome --chrome-mode=chrome-for-testing --concurrency=1 --timeout=60000
+```
+
 ## Studio Preview
 
 ```bash
@@ -83,6 +108,7 @@ Do not commit generated preview or dependency output:
 - `remotion/public/audio/*.mp3`
 - `remotion/out/preview.png`
 - `remotion/out/smoke.mp4`
+- `remotion/out/segment.mp4`
 - `remotion/node_modules/`
 
 `remotion/props.json` is sample input for this Remotion project and may be committed when intentionally regenerated.
