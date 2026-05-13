@@ -1,4 +1,4 @@
-import {AbsoluteFill, Img, OffthreadVideo, staticFile} from "remotion";
+import {AbsoluteFill, Img, Video, staticFile} from "remotion";
 import type {CSSProperties} from "react";
 import type {SyncCutScene, SyncCutSection} from "../types";
 import {PlaceholderScene} from "./PlaceholderScene";
@@ -36,9 +36,10 @@ export const VisualAssetScene = ({
         {asset.kind === "image" ? (
           <Img src={staticFile(asset.publicPath)} style={styles.media} />
         ) : (
-          <OffthreadVideo
+          <Video
             src={staticFile(asset.publicPath)}
             muted
+            loop
             style={styles.media}
           />
         )}

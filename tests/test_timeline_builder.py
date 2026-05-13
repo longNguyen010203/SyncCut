@@ -389,3 +389,136 @@ def test_repeated_text_does_not_match_backwards() -> None:
 
     assert output["timeline"][0]["timing"]["local_start_sec"] == 0.0
     assert output["timeline"][1]["timing"]["local_start_sec"] == 2.0
+
+
+def test_suspicious_same_section_gap_extends_previous_scene() -> None:
+    scenes = [
+        scene("scene_001", "First.", scene_order=1),
+        scene("scene_002", "Second.", scene_order=2),
+    ]
+    sections = [
+        section_asset(
+            "01_HOOK",
+            "HOOK",
+            1,
+            alignment(
+                duration=4.0,
+                paragraphs=[
+                    paragraph("First.", 0.0, 1.0),
+                    paragraph("Second.", 2.115, 3.0),
+                ],
+            ),
+        )
+    ]
+
+    output = build_timeline(scenes, sections, Path("scenes.json"))
+    first = output["timeline"][0]["timing"]
+    second = output["timeline"][1]["timing"]
+
+    assert first["start_sec"] == 0.0
+    assert first["end_sec"] == 2.115
+    assert first["duration_sec"] == 2.115
+    assert first["local_end_sec"] == 2.115
+    assert second["start_sec"] == 2.115
+    assert second["local_start_sec"] == 2.115
+    assert first["end_sec"] <= second["start_sec"]
+
+
+def test_suspicious_gap_smoothing_does_not_move_next_scene_start() -> None:
+    scenes = [
+        scene("scene_001", "First.", scene_order=1),
+        scene("scene_002", "Second.", scene_order=2),
+    ]
+    sections = [
+        section_asset(
+            "01_HOOK",
+            "HOOK",
+            1,
+            alignment(
+                duration=5.0,
+                paragraphs=[
+                    paragraph("First.", 0.0, 1.0),
+                    paragraph("Second.", 2.25, 3.0),
+                ],
+            ),
+        )
+    ]
+
+    output = build_timeline(scenes, sections, Path("scenes.json"))
+    second = output["timeline"][1]["timing"]
+
+    assert second["start_sec"] == 2.25
+    assert second["local_start_sec"] == 2.25
+
+
+def test_suspicious_gap_smoothing_does_not_merge_section_boundaries() -> None:
+    scenes = [
+        scene("scene_001", "First.", section_key="01_HOOK", section="HOOK", section_order=1, scene_order=1),
+        scene("scene_002", "Second.", section_key="02_INTRO", section="INTRO", section_order=2, scene_order=2),
+    ]
+    sections = [
+        section_asset(
+            "01_HOOK",
+            "HOOK",
+            1,
+            alignment(
+                duration=5.0,
+                paragraphs=[paragraph("First.", 0.0, 1.0)],
+                path="alignments/01_HOOK_alignment_tmp.json",
+            ),
+        ),
+        section_asset(
+            "02_INTRO",
+            "INTRO",
+            2,
+            alignment(
+                duration=3.0,
+                paragraphs=[paragraph("Second.", 0.0, 1.0)],
+                path="alignments/02_INTRO_alignment_tmp.json",
+            ),
+        ),
+    ]
+
+    output = build_timeline(scenes, sections, Path("scenes.json"))
+
+    assert output["timeline"][0]["timing"]["end_sec"] == 1.0
+    assert output["timeline"][0]["timing"]["local_end_sec"] == 1.0
+    assert output["timeline"][1]["timing"]["start_sec"] == 5.0
+
+
+def test_contiguous_same_section_scenes_remain_unchanged() -> None:
+    scenes = [
+        scene("scene_001", "First.", scene_order=1),
+        scene("scene_002", "Second.", scene_order=2),
+    ]
+    sections = [
+        section_asset(
+            "01_HOOK",
+            "HOOK",
+            1,
+            alignment(
+                duration=3.0,
+                paragraphs=[
+                    paragraph("First.", 0.0, 1.0),
+                    paragraph("Second.", 1.0, 2.0),
+                ],
+            ),
+        )
+    ]
+
+    output = build_timeline(scenes, sections, Path("scenes.json"))
+
+    assert output["timeline"][0]["timing"] == {
+        "start_sec": 0.0,
+        "end_sec": 1.0,
+        "duration_sec": 1.0,
+        "local_start_sec": 0.0,
+        "local_end_sec": 1.0,
+    }
+    assert output["timeline"][1]["timing"] == {
+        "start_sec": 1.0,
+        "end_sec": 2.0,
+        "duration_sec": 1.0,
+        "local_start_sec": 1.0,
+        "local_end_sec": 2.0,
+    }

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from synccut.models import AlignmentSection, MatchResult, Scene, SectionAsset, TimedText
+from synccut.timeline_validator import SUSPICIOUS_GAP_SEC
 from synccut.validators import SyncCutError, normalize_match_text, normalize_match_word
 
 
@@ -61,6 +62,7 @@ def build_timeline(
                 "warnings": [],
             }
         )
+    _smooth_suspicious_same_section_gaps(timeline_entries)
 
     section_entries = []
     for section in sorted(sections, key=lambda item: (item.section_order, item.section_key)):
@@ -102,6 +104,24 @@ def _section_offsets(sections: list[SectionAsset]) -> dict[str, float]:
         offsets[section.section_key] = offset
         offset += section.alignment.total_duration_sec
     return offsets
+
+
+def _smooth_suspicious_same_section_gaps(timeline_entries: list[dict]) -> None:
+    previous_entry_by_section: dict[str, dict] = {}
+    for entry in timeline_entries:
+        section_key = entry["section_key"]
+        previous = previous_entry_by_section.get(section_key)
+        if previous is not None:
+            previous_timing = previous["timing"]
+            timing = entry["timing"]
+            gap = timing["start_sec"] - previous_timing["end_sec"]
+            if gap > SUSPICIOUS_GAP_SEC:
+                previous_timing["end_sec"] = timing["start_sec"]
+                previous_timing["local_end_sec"] = timing["local_start_sec"]
+                previous_timing["duration_sec"] = (
+                    previous_timing["end_sec"] - previous_timing["start_sec"]
+                )
+        previous_entry_by_section[section_key] = entry
 
 
 def _match_scene_to_alignment(
