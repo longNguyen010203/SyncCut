@@ -32,6 +32,15 @@ Validation summary before render:
 
 The final render succeeded after the `scene_033` asset was replaced. The successful render produced and encoded all `22584` frames.
 
+## Human Playback Review Instructions
+
+- Open `remotion/out/final.mp4` locally.
+- Watch and listen manually.
+- Record timestamps as `HH:MM:SS`.
+- If `scene_id` is unknown, use the timestamp-to-scene helper below.
+- Do not use ffmpeg or ffprobe.
+- Do not edit media in this phase.
+
 ## Manual Review Checklist
 
 This review records render evidence and release risk. Codex cannot directly watch or listen to GUI video playback from this environment, so playback-specific items are marked as requiring human visual/audio confirmation rather than claimed as pass.
@@ -50,18 +59,80 @@ This review records render evidence and release risk. Codex cannot directly watc
 | Known `07_CONCLUSION` timing gap | warning | The known 1.115s gap remains recorded. |
 | Visual quality issues listed by scene id | needs human review | No visual quality issues can be confirmed without playback review. |
 
+## Issue Categories
+
+- `audio_ends_before_visual`: narration or other audio ends while visuals continue in a noticeable way.
+- `visual_ends_before_audio`: visuals end or cut away before narration or other audio finishes.
+- `section_gap`: visible or audible gap between sections or adjacent scenes.
+- `section_overlap`: adjacent section audio or visuals overlap incorrectly.
+- `scene_too_short`: a scene cuts away too quickly for the narration or visual content.
+- `scene_too_long`: a scene lingers noticeably longer than the narration or useful visual content.
+- `audio_silence`: unexpected silence occurs.
+- `black_screen`: black screen appears when content should be visible.
+- `placeholder_visible`: AI_VIDEO or B_ROLL placeholder card appears where a prepared asset should appear.
+- `visual_quality`: asset is off-topic, low quality, distorted, badly cropped, or otherwise unsuitable.
+- `transition_issue`: transition between scenes or sections feels broken, abrupt, or confusing.
+- `narration_alignment`: narration timing does not match the displayed section or scene.
+- `other`: issue does not fit the named categories.
+
+## Structured Issue Log
+
+Severity values: `low`, `medium`, `high`, `blocker`.
+
+| id | timestamp_start | timestamp_end | section_key | scene_id | category | severity | description | suspected_layer | proposed_next_action |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| P22-001 | unknown | unknown | 07_CONCLUSION | scene_030/scene_031 | section_gap | medium | Known 1.115s gap is not very disruptive but should be smoothed for continuity. | timeline | Phase 23 should adjust or smooth the conclusion timing gap. |
+| P22-002 | multiple | multiple | multiple | multiple AI_VIDEO/B_ROLL scenes | visual_ends_before_audio | high | Several prepared visual assets are shorter than the narration audio, causing visual duration mismatch. | asset/remotion | Phase 23 should decide whether to loop, freeze last frame, extend, replace assets, or adjust scene timing. |
+
+## Timestamp-to-Scene Helper
+
+Allowed command if `timeline.json` is current:
+
+```bash
+.venv/bin/synccut inspect timeline.json
+```
+
+If `timeline.json` is missing or stale, regenerate and inspect it from the repository root:
+
+```bash
+.venv/bin/synccut build-timeline examples/scenes.json --audio-dir examples/audio --alignment-dir examples/alignments --out timeline.json
+.venv/bin/synccut inspect timeline.json
+```
+
+Convert `HH:MM:SS` to seconds, then match that timestamp to the section or scene interval in the inspect output. If mapping remains unclear, leave `scene_id` as `unknown` and describe the observed issue clearly.
+
 ## Issues Found
 
 - The earlier invalid `scene_033.mp4` asset was replaced before the successful render.
-- The known `07_CONCLUSION` timing gap remains.
-- Human playback review is still required to confirm audio audibility, visual quality, transitions, and absence of black frames/placeholders.
+- The known `07_CONCLUSION` timing gap remains. Human review found it is not very disruptive, but it should be smoothed for continuity.
+- Many AI_VIDEO and B_ROLL scenes use prepared visual assets that are shorter than the narration audio, causing visual duration mismatch.
+- Human review was useful but not exhaustive. Additional subtle timing or visual quality issues may remain and can be handled in future polish versions.
+
+## Issue Classification and Next Scope
+
+No blocker issue was found that prevents the file from rendering. The release decision remains `needs-polish` because `P22-002` is a high-severity visual-duration mismatch affecting multiple AI_VIDEO and B_ROLL scenes.
+
+`P22-001` should be handled in Phase 23 timing polish. The likely fix direction is to inspect conclusion scene timing, decide whether to close the gap by adjusting a scene boundary, section timing, or transition behavior, and keep the automated validator warning evidence for comparison.
+
+`P22-002` should be handled in Phase 23 visual-duration polish. The likely fix direction is to define deterministic behavior for video assets shorter than scene duration. Options include looping short videos, freezing the last frame, replacing short assets, using a still fallback for too-short assets, or adjusting scene duration only when timeline and audio timing support it. Prefer a deterministic Remotion-side fallback if it can be done without changing source media.
+
+Other subtle timing or visual-quality issues may be deferred to future versions unless they become release blockers during later review.
 
 ## Release Decision
 
 Decision: `needs-polish`
 
-Reason: render and preflight evidence are good, but a release decision should not be upgraded to `release-ready` or `release-ready-with-known-warnings` until a human reviewer watches and listens to `remotion/out/final.mp4`.
+Reason: render and preflight evidence are good, but human playback found timing and visual-duration issues that should be handled before release tagging.
+
+Allowed decisions:
+
+- `release-ready-with-known-warnings`
+- `needs-polish`
+- `blocked`
 
 ## Next Recommended Action
 
-Have a human reviewer play `remotion/out/final.mp4` locally and update this document with concrete playback findings. If playback is acceptable apart from the known `07_CONCLUSION` gap, the decision can be updated to `release-ready-with-known-warnings`.
+Start Phase 23 with two workstreams:
+
+1. Conclusion gap smoothing.
+2. Short-video duration handling for AI_VIDEO and B_ROLL assets.
