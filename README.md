@@ -239,6 +239,8 @@ cd remotion
 npm run typecheck
 ```
 
+GitHub Actions runs the Python test suite and Remotion typecheck on `push` and `pull_request`. CI intentionally does not render video, does not require local visual assets, and does not upload generated media or render outputs. Local render workflows remain documented in [remotion/README.md](remotion/README.md).
+
 Check CLI help:
 
 ```bash
