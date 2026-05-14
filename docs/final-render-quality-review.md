@@ -84,6 +84,11 @@ Severity values: `low`, `medium`, `high`, `blocker`.
 | P22-001 | unknown | unknown | 07_CONCLUSION | scene_030/scene_031 | section_gap | medium | Known 1.115s gap is not very disruptive but should be smoothed for continuity. | timeline | Phase 23 should adjust or smooth the conclusion timing gap. |
 | P22-002 | multiple | multiple | multiple | multiple AI_VIDEO/B_ROLL scenes | visual_ends_before_audio | high | Several prepared visual assets are shorter than the narration audio, causing visual duration mismatch. | asset/remotion | Phase 23 should decide whether to loop, freeze last frame, extend, replace assets, or adjust scene timing. |
 
+Issue status notes:
+
+- `P22-001`: resolved/acceptable after Phase 23 timeline smoothing and post-polish human re-review.
+- `P22-002`: resolved/acceptable after Phase 23 explicit video looping and post-polish human re-review.
+
 ## Timestamp-to-Scene Helper
 
 Allowed command if `timeline.json` is current:
@@ -118,11 +123,34 @@ No blocker issue was found that prevents the file from rendering. The release de
 
 Other subtle timing or visual-quality issues may be deferred to future versions unless they become release blockers during later review.
 
+## Post-Polish Human Re-Review
+
+Date: 2026-05-14
+
+Output reviewed:
+
+```text
+remotion/out/final.mp4
+```
+
+Render evidence:
+
+- Rendered and encoded `22584/22584` frames.
+- Output size: `587M` from `ls -lh remotion/out/final.mp4`.
+- Output size: `615.1 MB` reported by Remotion.
+
+Human review findings:
+
+- `P22-001`: resolved/acceptable. The `07_CONCLUSION` gap issue is now acceptable after Phase 23 timing smoothing.
+- `P22-002`: resolved/acceptable. Short AI_VIDEO/B_ROLL videos now loop through the scene duration acceptably after Phase 23 explicit video looping.
+- No new blocker issue was reported by the user.
+- This was a human playback pass, not exhaustive QA. Remaining risk is normal non-exhaustive review risk, and future minor polish can be handled in later versions.
+
 ## Release Decision
 
-Decision: `needs-polish`
+Decision: `release-ready-with-known-warnings`
 
-Reason: render and preflight evidence are good, but human playback found timing and visual-duration issues that should be handled before release tagging.
+Reason: the post-polish render succeeded, human re-review confirmed the two known issues are acceptable/resolved, and no new blocker was reported. Remaining risk is normal non-exhaustive QA risk, and future minor polish can be handled in later versions.
 
 Allowed decisions:
 
@@ -132,7 +160,6 @@ Allowed decisions:
 
 ## Next Recommended Action
 
-Start Phase 23 with two workstreams:
+Proceed to Phase 24 Milestone 4 cleanup and artifact review. After cleanup and the docs evidence commit, Phase 25 can prepare the `v0.1.0` tag and release checklist if the user approves.
 
-1. Conclusion gap smoothing.
-2. Short-video duration handling for AI_VIDEO and B_ROLL assets.
+Do not tag in this milestone.
