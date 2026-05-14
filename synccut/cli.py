@@ -5,6 +5,7 @@ from typing import Annotated
 import typer
 
 from synccut.alignment_loader import load_section_assets
+from synccut.narration_package import prepare_narration_package
 from synccut.preflight import format_preflight, inspect_preflight_file, preflight_to_dict
 from synccut.remotion_assets import prepare_remotion_assets_file
 from synccut.remotion_exporter import export_remotion_props_file
@@ -141,6 +142,48 @@ def prepare_remotion_assets_cmd(
     typer.echo(f"audio_assets: {len(result.audio_assets)}")
     typer.echo(f"public_dir: {out_dir}")
     typer.echo(f"Next: synccut preflight {props_json} --verify-files --public-dir remotion/public")
+
+
+@app.command("prepare-narration")
+def prepare_narration_cmd(
+    scenes_json: Annotated[Path, typer.Argument(help="Path to scenes.json.")],
+    out_dir: Annotated[Path, typer.Option(help="Directory to write narration package files.")],
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Report planned narration package files without writing.")
+    ] = False,
+    overwrite: Annotated[
+        bool, typer.Option("--overwrite", help="Replace differing narration package files.")
+    ] = False,
+) -> None:
+    """Prepare section narration text and manifest for future audio/alignment providers."""
+    try:
+        result = prepare_narration_package(
+            scenes_json,
+            out_dir,
+            dry_run=dry_run,
+            overwrite=overwrite,
+        )
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    if result.dry_run:
+        typer.echo(f"Dry run: narration package {result.out_dir}")
+        typer.echo(f"sections: {len(result.sections)}")
+        typer.echo(f"scenes: {result.total_scenes}")
+        typer.echo(f"would_create: {result.written}")
+        typer.echo(f"would_reuse: {result.reused}")
+        typer.echo(f"would_block: {result.blocked}")
+        typer.echo(f"manifest: {result.manifest_path}")
+        return
+
+    typer.echo(f"Prepared narration package {result.out_dir}")
+    typer.echo(f"sections: {len(result.sections)}")
+    typer.echo(f"scenes: {result.total_scenes}")
+    typer.echo(f"written: {result.written}")
+    typer.echo(f"reused: {result.reused}")
+    typer.echo(f"manifest: {result.manifest_path}")
+    typer.echo("Next: provide this narration package to an audio/alignment provider")
 
 
 @app.command("prepare-visual-assets")

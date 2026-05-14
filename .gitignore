@@ -1,4 +1,5 @@
 examples
+generated/
 assets/visuals/
 .venv
 remotion/node_modules

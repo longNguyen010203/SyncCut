@@ -491,6 +491,69 @@ def test_cli_help_clarifies_asset_preparation_and_preflight_options() -> None:
     assert "requires --public-dir" in preflight_help.output
 
 
+def test_prepare_narration_cli_succeeds_and_prints_summary(tmp_path) -> None:
+    scenes_json, _, _ = write_tiny_fixture(tmp_path)
+    out_dir = tmp_path / "generated" / "narration"
+
+    result = CliRunner().invoke(
+        app,
+        ["prepare-narration", str(scenes_json), "--out-dir", str(out_dir)],
+    )
+
+    assert result.exit_code == 0
+    assert (out_dir / "narration_manifest.json").exists()
+    assert (out_dir / "01_HOOK.txt").read_text(encoding="utf-8") == "Hello world.\n"
+    assert f"Prepared narration package {out_dir}" in result.output
+    assert "sections: 1" in result.output
+    assert "scenes: 1" in result.output
+    assert "written: 2" in result.output
+    assert "reused: 0" in result.output
+    assert f"manifest: {out_dir / 'narration_manifest.json'}" in result.output
+    assert "Next: provide this narration package to an audio/alignment provider" in result.output
+
+
+def test_prepare_narration_cli_dry_run_writes_nothing(tmp_path) -> None:
+    scenes_json, _, _ = write_tiny_fixture(tmp_path)
+    out_dir = tmp_path / "generated" / "narration"
+
+    result = CliRunner().invoke(
+        app,
+        ["prepare-narration", str(scenes_json), "--out-dir", str(out_dir), "--dry-run"],
+    )
+
+    assert result.exit_code == 0
+    assert not out_dir.exists()
+    assert f"Dry run: narration package {out_dir}" in result.output
+    assert "sections: 1" in result.output
+    assert "scenes: 1" in result.output
+    assert "would_create: 2" in result.output
+    assert "would_reuse: 0" in result.output
+    assert "would_block: 0" in result.output
+
+
+def test_prepare_narration_cli_blocks_different_existing_file(tmp_path) -> None:
+    scenes_json, _, _ = write_tiny_fixture(tmp_path)
+    out_dir = tmp_path / "generated" / "narration"
+
+    first = CliRunner().invoke(
+        app,
+        ["prepare-narration", str(scenes_json), "--out-dir", str(out_dir)],
+    )
+    assert first.exit_code == 0
+    (out_dir / "01_HOOK.txt").write_text("changed\n", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        ["prepare-narration", str(scenes_json), "--out-dir", str(out_dir)],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "output exists and differs" in result.output
+    assert "--overwrite" in result.output
+    assert "Traceback" not in result.output
+
+
 def test_validate_timeline_cli_succeeds_on_valid_timeline(tmp_path) -> None:
     timeline_json = write_tiny_timeline(tmp_path)
 

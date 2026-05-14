@@ -113,6 +113,7 @@ See [docs/schemas.md](docs/schemas.md) for data shapes and [docs/matching.md](do
 - `build-timeline`: build `timeline.json` from scenes, audio references, and alignment timestamps.
 - `validate-timeline`: validate `timeline.json` structure and timing.
 - `inspect`: print a readable timeline overview grouped by section.
+- `prepare-narration`: create a local narration manifest/text package from `scenes.json` for future audio/alignment providers; it does not call ElevenLabs or generate audio/alignment.
 - `export-remotion`: export Remotion props from `timeline.json`.
 - `prepare-remotion-assets`: copy section audio into `remotion/public/audio/` and update props.
 - `prepare-visual-assets`: copy local AI/B-roll visual assets into `remotion/public/visuals/` and update props.
