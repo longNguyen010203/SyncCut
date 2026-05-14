@@ -213,6 +213,20 @@ def format_preflight(summary: PreflightSummary) -> str:
                 f"file_errors: {summary.file_errors}",
             ]
         )
+    if (
+        summary.visual_missing > 0
+        and not summary.errors
+        and (not summary.verify_files or summary.file_errors == 0)
+    ):
+        lines.extend(
+            [
+                "",
+                (
+                    "Note: Missing AI_VIDEO/B_ROLL visuals are warning-only; Remotion "
+                    "will render placeholders unless visual assets are prepared."
+                ),
+            ]
+        )
     lines.extend(["", "Warnings:"])
     if summary.warnings:
         lines.extend(_format_issue(issue) for issue in summary.warnings)

@@ -430,6 +430,12 @@ def test_build_timeline_cli_succeeds_on_tiny_complete_fixture(tmp_path) -> None:
 
     assert result.exit_code == 0
     assert out.exists()
+    assert f"Built timeline {out}" in result.output
+    assert "sections: 1" in result.output
+    assert "scenes: 1" in result.output
+    assert "duration_sec: 2.0" in result.output
+    assert "warnings: 0" in result.output
+    assert f"Next: synccut validate-timeline {out}" in result.output
     data = json.loads(out.read_text(encoding="utf-8"))
     assert set(data) == {"metadata", "sections", "timeline", "warnings"}
     assert data["metadata"]["total_scenes"] == 1
@@ -467,6 +473,24 @@ def test_build_timeline_cli_fails_clearly_on_invalid_input(tmp_path) -> None:
     assert "Traceback" not in result.output
 
 
+def test_cli_help_clarifies_asset_preparation_and_preflight_options() -> None:
+    runner = CliRunner()
+
+    audio_help = runner.invoke(app, ["prepare-remotion-assets", "--help"])
+    assert audio_help.exit_code == 0
+    assert "audio assets" in audio_help.output
+
+    visual_help = runner.invoke(app, ["prepare-visual-assets", "--help"])
+    assert visual_help.exit_code == 0
+    assert "assets/visuals/<scene_id>.<ext>" in visual_help.output
+    assert "supported file per target scene" in visual_help.output
+
+    preflight_help = runner.invoke(app, ["preflight", "--help"])
+    assert preflight_help.exit_code == 0
+    assert "Verify prepared public audio/visual files exist" in preflight_help.output
+    assert "requires --public-dir" in preflight_help.output
+
+
 def test_validate_timeline_cli_succeeds_on_valid_timeline(tmp_path) -> None:
     timeline_json = write_tiny_timeline(tmp_path)
 
@@ -478,6 +502,10 @@ def test_validate_timeline_cli_succeeds_on_valid_timeline(tmp_path) -> None:
     assert "sections: 1" in result.output
     assert "duration_sec: 2.0" in result.output
     assert "warnings: 0" in result.output
+    assert (
+        f"Next: synccut export-remotion {timeline_json} --out remotion/props.json"
+        in result.output
+    )
 
 
 def test_validate_timeline_cli_prints_warnings_but_exits_zero(tmp_path) -> None:
@@ -489,6 +517,10 @@ def test_validate_timeline_cli_prints_warnings_but_exits_zero(tmp_path) -> None:
     assert "warnings: 1" in result.output
     assert "Warning:" in result.output
     assert "gap of 2.000s" in result.output
+    assert (
+        f"Next: synccut export-remotion {timeline_json} --out remotion/props.json"
+        in result.output
+    )
 
 
 def test_validate_timeline_cli_prints_top_level_warnings(tmp_path) -> None:
@@ -556,6 +588,7 @@ def test_export_remotion_cli_succeeds_on_tiny_complete_timeline(tmp_path) -> Non
     assert "sections: 1" in result.output
     assert "fps: 30" in result.output
     assert "duration_frames: 60" in result.output
+    assert f"Next: synccut prepare-remotion-assets {out} --out-dir remotion/public" in result.output
     assert data["metadata"]["duration_frames"] == 60
     assert data["scenes"][0]["id"] == "scene_001"
 
@@ -602,6 +635,10 @@ def test_prepare_remotion_assets_cli_succeeds_on_tiny_props_fixture(
     assert "audio_overwritten: 0" in result.output
     assert "audio_assets: 1" in result.output
     assert f"public_dir: {out_dir}" in result.output
+    assert (
+        f"Next: synccut preflight {props_json} --verify-files --public-dir remotion/public"
+        in result.output
+    )
 
 
 def test_prepare_remotion_assets_cli_fails_on_malformed_props(tmp_path) -> None:
@@ -820,6 +857,9 @@ def test_preflight_cli_warning_status_exits_zero_and_prints_stable_text(tmp_path
         "warnings: 1\n"
         "errors: 0\n"
         "\n"
+        "Note: Missing AI_VIDEO/B_ROLL visuals are warning-only; Remotion will render "
+        "placeholders unless visual assets are prepared.\n"
+        "\n"
         "Warnings:\n"
         "warning visual_missing scene_001 AI_VIDEO missing visual asset; placeholder will render\n"
         "\n"
@@ -875,6 +915,7 @@ def test_preflight_cli_verify_files_exits_zero_and_prints_file_fields(tmp_path) 
     assert "verify_files: true" in result.output
     assert f"public_dir: {public_dir}" in result.output
     assert "file_errors: 0" in result.output
+    assert "Missing AI_VIDEO/B_ROLL visuals are warning-only" in result.output
     assert "Traceback" not in result.output
 
 

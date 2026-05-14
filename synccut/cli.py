@@ -47,6 +47,14 @@ def build_timeline(
         typer.echo(f"Error: {exc}", err=True)
         raise typer.Exit(1) from exc
 
+    metadata = timeline["metadata"]
+    typer.echo(f"Built timeline {out}")
+    typer.echo(f"sections: {metadata['total_sections']}")
+    typer.echo(f"scenes: {metadata['total_scenes']}")
+    typer.echo(f"duration_sec: {metadata['total_duration_sec']}")
+    typer.echo(f"warnings: {len(timeline['warnings'])}")
+    typer.echo(f"Next: synccut validate-timeline {out}")
+
 
 @app.command("validate-timeline")
 def validate_timeline_cmd(
@@ -73,6 +81,7 @@ def validate_timeline_cmd(
     typer.echo(f"warnings: {len(warnings)}")
     for warning in warnings:
         typer.echo(f"Warning: {warning}")
+    typer.echo(f"Next: synccut export-remotion {timeline_json} --out remotion/props.json")
 
 
 @app.command("inspect")
@@ -108,14 +117,17 @@ def export_remotion_cmd(
     typer.echo(f"fps: {props['metadata']['fps']}")
     typer.echo(f"duration_frames: {props['metadata']['duration_frames']}")
     typer.echo(f"warnings: {len(props['warnings'])}")
+    typer.echo(f"Next: synccut prepare-remotion-assets {out} --out-dir remotion/public")
 
 
 @app.command("prepare-remotion-assets")
 def prepare_remotion_assets_cmd(
     props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
-    out_dir: Annotated[Path, typer.Option(help="Remotion public directory.")],
+    out_dir: Annotated[
+        Path, typer.Option(help="Remotion public directory for prepared audio assets.")
+    ],
 ) -> None:
-    """Copy Remotion assets into the public directory and update props JSON."""
+    """Copy Remotion audio assets into the public directory and update props JSON."""
     try:
         result = prepare_remotion_assets_file(props_json, out_dir)
     except SyncCutError as exc:
@@ -128,12 +140,21 @@ def prepare_remotion_assets_cmd(
     typer.echo(f"audio_overwritten: {result.overwritten}")
     typer.echo(f"audio_assets: {len(result.audio_assets)}")
     typer.echo(f"public_dir: {out_dir}")
+    typer.echo(f"Next: synccut preflight {props_json} --verify-files --public-dir remotion/public")
 
 
 @app.command("prepare-visual-assets")
 def prepare_visual_assets_cmd(
     props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
-    assets_dir: Annotated[Path, typer.Option(help="Directory containing local visual assets.")],
+    assets_dir: Annotated[
+        Path,
+        typer.Option(
+            help=(
+                "Directory containing local visual assets such as "
+                "assets/visuals/<scene_id>.<ext>, one supported file per target scene."
+            )
+        ),
+    ],
     out_dir: Annotated[Path, typer.Option(help="Remotion public directory.")],
 ) -> None:
     """Copy local visual assets into the public directory and update props JSON."""
@@ -180,10 +201,18 @@ def preflight_cmd(
         bool, typer.Option("--json", help="Print machine-readable JSON.")
     ] = False,
     verify_files: Annotated[
-        bool, typer.Option("--verify-files", help="Verify prepared public files exist.")
+        bool,
+        typer.Option(
+            "--verify-files",
+            help="Verify prepared public audio/visual files exist; requires --public-dir.",
+        ),
     ] = False,
     public_dir: Annotated[
-        Path | None, typer.Option("--public-dir", help="Remotion public directory.")
+        Path | None,
+        typer.Option(
+            "--public-dir",
+            help="Remotion public directory used with --verify-files.",
+        ),
     ] = None,
 ) -> None:
     """Report full-render readiness from Remotion props."""

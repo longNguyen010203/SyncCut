@@ -191,6 +191,16 @@ def format_visual_asset_readiness(summary: VisualAssetReadinessSummary) -> str:
         f"missing: {summary.missing}",
         f"unsupported: {summary.unsupported}",
     ]
+    if summary.missing > 0:
+        lines.extend(
+            [
+                "",
+                (
+                    "Note: Missing AI_VIDEO/B_ROLL visuals are optional; Remotion will "
+                    "render placeholders unless visual assets are prepared."
+                ),
+            ]
+        )
     if summary.items:
         lines.append("")
         for item in summary.items:

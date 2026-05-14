@@ -350,6 +350,26 @@ def test_formatted_text_output_is_stable(tmp_path) -> None:
     )
 
 
+def test_formatted_text_output_with_missing_assets_explains_optional_placeholders(
+    tmp_path,
+) -> None:
+    summary = readiness(valid_props(), tmp_path)
+
+    assert format_visual_asset_readiness(summary) == (
+        f"Visual assets: {tmp_path / 'remotion' / 'props.json'}\n"
+        "target_scenes: 2\n"
+        "prepared: 0\n"
+        "missing: 2\n"
+        "unsupported: 0\n"
+        "\n"
+        "Note: Missing AI_VIDEO/B_ROLL visuals are optional; Remotion will render "
+        "placeholders unless visual assets are prepared.\n"
+        "\n"
+        "scene_001 AI_VIDEO missing -\n"
+        "scene_002 B_ROLL missing -\n"
+    )
+
+
 def test_formatted_text_output_with_zero_target_scenes_has_summary_only(tmp_path) -> None:
     props = valid_props()
     props["scenes"] = [props["scenes"][2]]
