@@ -1,6 +1,8 @@
 # SyncCut
 
-SyncCut is a Python CLI plus a Remotion project for turning prepared scene, narration audio, and alignment data into a renderable video timeline. The Python side builds and validates structured timeline data; the Remotion side consumes `remotion/props.json` to preview or locally render the video.
+SyncCut is a Python CLI plus a Remotion renderer for turning prepared scene, narration audio, and alignment data into a renderable video. The Python side builds and validates structured timeline data; the Remotion side consumes `remotion/props.json` and prepared public assets to preview or locally render the video.
+
+The v0.1.0 MVP is a prepared-input-to-video pipeline. It assumes scenes, audio, and alignment files already exist, then produces timeline data, Remotion props, public assets, preflight reports, and local Remotion render outputs.
 
 ## What The MVP Does
 
@@ -25,17 +27,19 @@ SyncCut is a Python CLI plus a Remotion project for turning prepared scene, narr
 
 ## Prerequisites
 
-- Python 3.11 or newer.
-- Node and npm for the Remotion project under `remotion/`.
+- Python 3.11 or newer, matching `requires-python = ">=3.11"` in `pyproject.toml`.
+- Node and npm for the Remotion project under `remotion/`; this repo uses Remotion 4, React 18, and TypeScript 5.
 - Local Chrome at `/usr/bin/google-chrome` for the local Remotion render scripts in this environment.
 - Prepared inputs: `scenes.json`, section audio files, and matching alignment JSON files.
+- Local AI video and B-roll visual assets are optional. Missing local visuals produce warnings/placeholders unless you are validating the full visual sample.
 
 ## Setup
 
-From the repository root:
+From a fresh clone, run these commands from the repository root unless a command explicitly changes into `remotion/`:
 
 ```bash
 python3 -m venv .venv
+source .venv/bin/activate
 .venv/bin/python -m pip install -e '.[dev]'
 cd remotion
 npm install
@@ -44,22 +48,59 @@ cd ..
 
 ## Quick Start
 
-Run the example workflow from the repository root:
+This no-visual quick start builds the sample timeline, exports Remotion props, prepares audio, and verifies public files. It does not require local AI video or B-roll files.
 
 ```bash
 .venv/bin/synccut build-timeline examples/scenes.json --audio-dir examples/audio --alignment-dir examples/alignments --out timeline.json
 .venv/bin/synccut validate-timeline timeline.json
-.venv/bin/synccut inspect timeline.json
 .venv/bin/synccut export-remotion timeline.json --out remotion/props.json
 .venv/bin/synccut prepare-remotion-assets remotion/props.json --out-dir remotion/public
-.venv/bin/synccut inspect-visual-assets remotion/props.json
 .venv/bin/synccut preflight remotion/props.json --verify-files --public-dir remotion/public
-cd remotion
-npm run typecheck
-npm run render:smoke:local
 ```
 
-`render:smoke:local` writes a short ignored preview video to `remotion/out/smoke.mp4`. Use segment or final render commands only after preflight and smoke rendering pass.
+Expected no-visual state: `preflight` may report `status: warning` because optional `AI_VIDEO` and `B_ROLL` local visuals are missing, but `errors` and `file_errors` should be `0`. Prepare the full local visual sample only when you have files under `assets/visuals/`; that workflow is summarized in [Local Visual Assets](#local-visual-assets).
+
+After preflight, validate the Remotion project:
+
+```bash
+cd remotion
+npm run typecheck
+```
+
+`npm run render:smoke:local` writes a short ignored preview video to `remotion/out/smoke.mp4`. Use render commands only after preflight and typecheck pass.
+
+## Pipeline Overview
+
+The normal data flow is:
+
+```text
+scenes.json + section audio + alignment JSON
+  -> timeline.json
+  -> validate / inspect
+  -> remotion/props.json
+  -> prepare-remotion-assets
+  -> remotion/public/audio/*
+  -> optional prepare-visual-assets
+  -> remotion/public/visuals/*
+  -> preflight
+  -> Remotion render
+  -> remotion/out/*
+```
+
+Key generated artifacts:
+
+- `timeline.json`: generated timeline output from `build-timeline`.
+- `remotion/props.json`: generated Remotion props exported from `timeline.json`; tracked as sample input only when intentionally refreshed.
+- `remotion/public/audio/*`: prepared local public copies of section audio.
+- `remotion/public/visuals/*`: prepared local public copies of optional AI video and B-roll assets.
+- `remotion/out/*`: Remotion still, smoke, segment, and final render outputs.
+- Caches: Python, pytest, Node, and Remotion tooling caches created while developing or rendering.
+
+## v0.1.0 Release Evidence
+
+The v0.1.0 release was validated with the TSMC sample after timing and visual-duration polish. The post-polish final render completed `22584/22584` frames to `remotion/out/final.mp4`, and human re-review accepted the previous conclusion timing gap and short-video duration issues as resolved. The release decision recorded in docs is `release-ready-with-known-warnings`.
+
+No local media, prepared public assets, or render outputs are bundled with the release. See [docs/final-render-quality-review.md](docs/final-render-quality-review.md) and [docs/plans/v0.1.0-release-checklist.md](docs/plans/v0.1.0-release-checklist.md) for release evidence.
 
 ## Input Expectations
 
@@ -84,9 +125,10 @@ Run `.venv/bin/synccut --help` or `.venv/bin/synccut <command> --help` for exact
 
 See [remotion/README.md](remotion/README.md) for detailed Remotion notes.
 
-Common commands from `remotion/`:
+Run render workflow commands from `remotion/` after exporting props, preparing assets, running preflight, and passing typecheck:
 
 ```bash
+cd remotion
 npm run typecheck
 npm run still:local
 npm run render:smoke:local
@@ -94,26 +136,37 @@ npm run render:segment:local
 npm run render:final:local
 ```
 
-The local render scripts use `/usr/bin/google-chrome` with `--chrome-mode=chrome-for-testing`. In sandboxed environments, Chrome launch may require permission. The default Remotion browser download path can fail with `remotion.media` DNS errors; the local scripts avoid that download path when Chrome is available.
+- `still:local` writes `remotion/out/preview.png`.
+- `render:smoke:local` renders frames `0-149` to `remotion/out/smoke.mp4`.
+- `render:segment:local` renders frames `0-899` to `remotion/out/segment.mp4`.
+- `render:final:local` renders the full composition to `remotion/out/final.mp4`.
+
+The local render scripts use `/usr/bin/google-chrome` with `--chrome-mode=chrome-for-testing`. In sandboxed environments, Chrome launch may fail with `SIGTRAP` or `setsockopt: Operation not permitted`; rerun with browser launch permission if available. Do not add workaround code unless you are intentionally changing the render environment. The default Remotion browser download path can fail with `remotion.media` DNS errors; the local scripts avoid that download path when Chrome is available.
 
 ## Local Visual Assets
 
-AI video and B-roll scenes can use optional local files named by scene id:
+AI video and B-roll scenes can use optional local files named by scene id under `assets/visuals/`:
 
 ```text
-assets/visuals/<scene_id>.mp4
-assets/visuals/<scene_id>.png
+assets/visuals/<scene_id>.<supported_ext>
 ```
 
 Supported local visual extensions are `.mp4`, `.webm`, `.mov`, `.png`, `.jpg`, `.jpeg`, and `.webp`.
 
-Prepare local visual assets with:
+Use exactly one supported file per target scene id. Local visual media is not bundled with the release and should not be committed.
+
+After exporting `remotion/props.json` and preparing audio, inspect, prepare, and verify visuals:
 
 ```bash
+.venv/bin/synccut inspect-visual-assets remotion/props.json
 .venv/bin/synccut prepare-visual-assets remotion/props.json --assets-dir assets/visuals --out-dir remotion/public
+.venv/bin/synccut inspect-visual-assets remotion/props.json
+.venv/bin/synccut preflight remotion/props.json --verify-files --public-dir remotion/public
 ```
 
-Missing `AI_VIDEO` and `B_ROLL` visual files are non-fatal because Remotion renders placeholders. Unsupported or malformed prepared paths are reported by `inspect-visual-assets` and `preflight`.
+For the full TSMC visual sample, the expected prepared state is `visual_prepared: 17`, `visual_missing: 0`, `errors: 0`, `file_errors: 0`, and `status: ok`. See [docs/tsmc-visual-asset-manifest.md](docs/tsmc-visual-asset-manifest.md) for the scene list.
+
+Missing `AI_VIDEO` and `B_ROLL` visual files are non-fatal in no-visual validation because Remotion renders placeholders. Unsupported files, duplicate supported files for one scene id, or malformed prepared paths are reported by `inspect-visual-assets`, `prepare-visual-assets`, and `preflight`.
 
 ## Preflight And Troubleshooting
 
@@ -138,7 +191,15 @@ Common environment issues:
 
 ## Artifact Policy
 
-Do not commit generated or local-only artifacts:
+Generated, local media, and render artifacts are ignored and should not be committed. Treat the generated paths by role:
+
+- `assets/visuals/*`: local-only source media for optional AI video and B-roll scenes.
+- `remotion/public/*`: prepared local public media copied from audio and visual inputs.
+- `remotion/out/*`: local Remotion render output.
+- `timeline.json`: generated timeline output.
+- `remotion/props.json`: generated sample props. Do not commit it after local validation regeneration unless a sample props refresh is explicitly approved.
+
+Common ignored paths include:
 
 - `timeline.json`
 - `remotion/public/*`
@@ -149,7 +210,19 @@ Do not commit generated or local-only artifacts:
 - Python, pytest, and Node caches
 - `remotion/props.json` if it only changed because of local validation regeneration
 
-`remotion/props.json` may be committed only when intentionally refreshed as sample Remotion input.
+When `git status` looks dirty after validation, check the state with:
+
+```bash
+git status --short
+```
+
+If `remotion/props.json` changed only because you regenerated the sample locally, restore it with:
+
+```bash
+git restore remotion/props.json
+```
+
+Do not restore source or documentation files unless that change is unintentional.
 
 ## Development
 
