@@ -5,6 +5,12 @@ from typing import Annotated
 import typer
 
 from synccut.alignment_loader import load_section_assets
+from synccut.audio_generation import (
+    DEFAULT_METADATA_PATH,
+    DEFAULT_MODEL_ID,
+    DEFAULT_OUTPUT_FORMAT,
+    generate_audio_from_manifest,
+)
 from synccut.narration_package import prepare_narration_package
 from synccut.preflight import format_preflight, inspect_preflight_file, preflight_to_dict
 from synccut.remotion_assets import prepare_remotion_assets_file
@@ -184,6 +190,91 @@ def prepare_narration_cmd(
     typer.echo(f"reused: {result.reused}")
     typer.echo(f"manifest: {result.manifest_path}")
     typer.echo("Next: provide this narration package to an audio/alignment provider")
+
+
+@app.command("generate-audio")
+def generate_audio_cmd(
+    manifest: Annotated[Path, typer.Argument(help="Path to narration_manifest.json.")],
+    provider: Annotated[str, typer.Option(help="Audio/alignment provider name.")],
+    audio_dir: Annotated[Path, typer.Option(help="Directory to write section audio files.")],
+    alignment_dir: Annotated[
+        Path, typer.Option(help="Directory to write section alignment JSON files.")
+    ],
+    voice_id: Annotated[
+        str | None,
+        typer.Option("--voice-id", help="ElevenLabs voice ID."),
+    ] = None,
+    model_id: Annotated[
+        str,
+        typer.Option("--model-id", help="ElevenLabs model ID."),
+    ] = DEFAULT_MODEL_ID,
+    output_format: Annotated[
+        str,
+        typer.Option("--output-format", help="ElevenLabs output format."),
+    ] = DEFAULT_OUTPUT_FORMAT,
+    metadata_out: Annotated[
+        Path,
+        typer.Option("--metadata-out", help="Path to write audio generation metadata."),
+    ] = DEFAULT_METADATA_PATH,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Report planned audio/alignment generation without writing."),
+    ] = False,
+    overwrite: Annotated[
+        bool,
+        typer.Option("--overwrite", help="Replace conflicting planned audio/alignment outputs."),
+    ] = False,
+    limit: Annotated[
+        int | None,
+        typer.Option("--limit", help="Generate only the first N manifest sections."),
+    ] = None,
+    section_key: Annotated[
+        list[str] | None,
+        typer.Option("--section-key", help="Generate only this section key; repeatable."),
+    ] = None,
+) -> None:
+    """Generate section audio and matching alignment JSON from a narration manifest."""
+    try:
+        result = generate_audio_from_manifest(
+            manifest,
+            provider=provider,
+            audio_dir=audio_dir,
+            alignment_dir=alignment_dir,
+            voice_id=voice_id,
+            model_id=model_id,
+            output_format=output_format,
+            metadata_path=metadata_out,
+            dry_run=dry_run,
+            overwrite=overwrite,
+            limit=limit,
+            section_keys=section_key,
+        )
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    if result.dry_run:
+        typer.echo(f"Dry run: audio generation {manifest}")
+        typer.echo(f"provider: {result.provider}")
+        typer.echo(f"sections: {len(result.sections)}")
+        typer.echo(f"would_generate: {result.written}")
+        typer.echo(f"would_reuse: {result.reused}")
+        typer.echo(f"would_block: {result.blocked}")
+        typer.echo(f"audio_dir: {audio_dir}")
+        typer.echo(f"alignment_dir: {alignment_dir}")
+        return
+
+    typer.echo(f"Generated audio and alignment {manifest}")
+    typer.echo(f"provider: {result.provider}")
+    typer.echo(f"sections: {len(result.sections)}")
+    typer.echo(f"written: {result.written}")
+    typer.echo(f"reused: {result.reused}")
+    typer.echo(f"blocked: {result.blocked}")
+    typer.echo(f"metadata: {result.metadata_path}")
+    typer.echo(
+        "Next: synccut build-timeline examples/scenes.json "
+        f"--audio-dir {audio_dir} --alignment-dir {alignment_dir} --out timeline.json"
+    )
 
 
 @app.command("prepare-visual-assets")

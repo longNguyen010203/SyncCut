@@ -3,6 +3,7 @@ from pathlib import Path
 
 from typer.testing import CliRunner
 
+from synccut.audio_generation import AudioGenerationResult, AudioGenerationSectionResult
 from synccut.cli import app
 
 
@@ -58,6 +59,40 @@ def write_tiny_fixture(root: Path) -> tuple[Path, Path, Path]:
         encoding="utf-8",
     )
     return scenes_json, audio_dir, alignment_dir
+
+
+def write_tiny_narration_manifest(root: Path) -> Path:
+    manifest_path = root / "generated" / "narration" / "narration_manifest.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "metadata": {
+                    "schema_version": "0.1",
+                    "generated_by": "synccut prepare-narration",
+                    "source_scenes": "scenes.json",
+                    "total_sections": 1,
+                    "total_scenes": 1,
+                },
+                "sections": [
+                    {
+                        "section_key": "01_HOOK",
+                        "section": "HOOK",
+                        "section_order": 1,
+                        "scene_ids": ["scene_001"],
+                        "scene_count": 1,
+                        "text_path": "01_HOOK.txt",
+                        "narration_text": "Hello world.",
+                        "text_hash": "sha256:" + "1" * 64,
+                        "expected_audio_path": "01_HOOK.mp3",
+                        "expected_alignment_path": "01_HOOK_alignment_tmp.json",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return manifest_path
 
 
 def write_tiny_timeline(root: Path) -> Path:
@@ -551,6 +586,188 @@ def test_prepare_narration_cli_blocks_different_existing_file(tmp_path) -> None:
     assert "Error:" in result.output
     assert "output exists and differs" in result.output
     assert "--overwrite" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_generate_audio_cli_dry_run_output_writes_nothing(tmp_path) -> None:
+    manifest_path = write_tiny_narration_manifest(tmp_path)
+    audio_dir = tmp_path / "generated" / "audio"
+    alignment_dir = tmp_path / "generated" / "alignments"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "generate-audio",
+            str(manifest_path),
+            "--provider",
+            "elevenlabs",
+            "--audio-dir",
+            str(audio_dir),
+            "--alignment-dir",
+            str(alignment_dir),
+            "--voice-id",
+            "voice",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert not audio_dir.exists()
+    assert not alignment_dir.exists()
+    assert f"Dry run: audio generation {manifest_path}" in result.output
+    assert "provider: elevenlabs" in result.output
+    assert "sections: 1" in result.output
+    assert "would_generate: 1" in result.output
+    assert "would_reuse: 0" in result.output
+    assert "would_block: 0" in result.output
+    assert f"audio_dir: {audio_dir}" in result.output
+    assert f"alignment_dir: {alignment_dir}" in result.output
+
+
+def test_generate_audio_cli_success_output_uses_orchestration_result(
+    tmp_path, monkeypatch
+) -> None:
+    manifest_path = write_tiny_narration_manifest(tmp_path)
+    audio_dir = tmp_path / "generated" / "audio"
+    alignment_dir = tmp_path / "generated" / "alignments"
+    metadata_path = tmp_path / "generated" / "audio_generation_manifest.json"
+
+    def fake_generate_audio_from_manifest(*_args, **_kwargs) -> AudioGenerationResult:
+        return AudioGenerationResult(
+            provider="elevenlabs",
+            sections=[
+                AudioGenerationSectionResult(
+                    section_key="01_HOOK",
+                    status="written",
+                    audio_path=audio_dir / "01_HOOK.mp3",
+                    alignment_path=alignment_dir / "01_HOOK_alignment_tmp.json",
+                    text_hash="sha256:" + "1" * 64,
+                )
+            ],
+            metadata_path=metadata_path,
+            dry_run=False,
+            written=1,
+            reused=0,
+            blocked=0,
+        )
+
+    monkeypatch.setattr(
+        "synccut.cli.generate_audio_from_manifest",
+        fake_generate_audio_from_manifest,
+    )
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "generate-audio",
+            str(manifest_path),
+            "--provider",
+            "elevenlabs",
+            "--audio-dir",
+            str(audio_dir),
+            "--alignment-dir",
+            str(alignment_dir),
+            "--voice-id",
+            "voice",
+            "--metadata-out",
+            str(metadata_path),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert f"Generated audio and alignment {manifest_path}" in result.output
+    assert "provider: elevenlabs" in result.output
+    assert "sections: 1" in result.output
+    assert "written: 1" in result.output
+    assert "reused: 0" in result.output
+    assert "blocked: 0" in result.output
+    assert f"metadata: {metadata_path}" in result.output
+    assert (
+        f"--audio-dir {audio_dir} --alignment-dir {alignment_dir} --out timeline.json"
+        in result.output
+    )
+
+
+def test_generate_audio_cli_missing_api_key_mentions_env_var(
+    tmp_path, monkeypatch
+) -> None:
+    monkeypatch.delenv("ELEVENLABS_API_KEY", raising=False)
+    manifest_path = write_tiny_narration_manifest(tmp_path)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "generate-audio",
+            str(manifest_path),
+            "--provider",
+            "elevenlabs",
+            "--audio-dir",
+            str(tmp_path / "audio"),
+            "--alignment-dir",
+            str(tmp_path / "alignments"),
+            "--voice-id",
+            "voice",
+            "--limit",
+            "1",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "ELEVENLABS_API_KEY" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_generate_audio_cli_conflict_mentions_overwrite(tmp_path) -> None:
+    manifest_path = write_tiny_narration_manifest(tmp_path)
+    audio_dir = tmp_path / "audio"
+    audio_dir.mkdir()
+    (audio_dir / "01_HOOK.mp3").write_bytes(b"existing")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "generate-audio",
+            str(manifest_path),
+            "--provider",
+            "elevenlabs",
+            "--audio-dir",
+            str(audio_dir),
+            "--alignment-dir",
+            str(tmp_path / "alignments"),
+            "--voice-id",
+            "voice",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "--overwrite" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_generate_audio_cli_invalid_provider_exits_nonzero(tmp_path) -> None:
+    manifest_path = write_tiny_narration_manifest(tmp_path)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "generate-audio",
+            str(manifest_path),
+            "--provider",
+            "other",
+            "--audio-dir",
+            str(tmp_path / "audio"),
+            "--alignment-dir",
+            str(tmp_path / "alignments"),
+            "--voice-id",
+            "voice",
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "unsupported audio provider" in result.output
     assert "Traceback" not in result.output
 
 
