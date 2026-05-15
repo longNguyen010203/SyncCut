@@ -1114,6 +1114,112 @@ def test_inspect_visual_assets_cli_is_read_only(tmp_path) -> None:
     assert props_json.read_text(encoding="utf-8") == before
 
 
+def test_visual_manifest_cli_markdown_success_output(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    out_path = tmp_path / "generated" / "visual_manifest.md"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "visual-manifest",
+            str(props_json),
+            "--assets-dir",
+            str(tmp_path / "assets" / "visuals"),
+            "--out",
+            str(out_path),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert out_path.read_text(encoding="utf-8").startswith("# Visual Asset Manifest\n")
+    assert f"Visual manifest {out_path}" in result.output
+    assert "format: markdown" in result.output
+    assert "target_scenes: 1" in result.output
+    assert "prepared: 0" in result.output
+    assert "missing: 1" in result.output
+    assert "unsupported: 0" in result.output
+    assert "local_found: 0" in result.output
+    assert "local_missing: 1" in result.output
+    assert "Next: add visual files under assets/visuals/<scene_id>.<ext>" in result.output
+
+
+def test_visual_manifest_cli_json_success_output(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    assets_dir = tmp_path / "assets" / "visuals"
+    assets_dir.mkdir(parents=True)
+    (assets_dir / "scene_001.png").write_bytes(b"image")
+    out_path = tmp_path / "generated" / "visual_manifest.json"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "visual-manifest",
+            str(props_json),
+            "--assets-dir",
+            str(assets_dir),
+            "--out",
+            str(out_path),
+            "--format",
+            "json",
+        ],
+    )
+
+    assert result.exit_code == 0
+    output = json.loads(out_path.read_text(encoding="utf-8"))
+    assert output["schema_version"] == "0.1"
+    assert output["summary"]["target_scenes"] == 1
+    assert output["summary"]["local_found"] == 1
+    assert output["scenes"][0]["local_asset_status"] == "found"
+    assert f"Visual manifest {out_path}" in result.output
+    assert "format: json" in result.output
+    assert "local_found: 1" in result.output
+
+
+def test_visual_manifest_cli_dry_run_writes_nothing(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    out_path = tmp_path / "generated" / "visual_manifest.md"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "visual-manifest",
+            str(props_json),
+            "--out",
+            str(out_path),
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert not out_path.exists()
+    assert not out_path.parent.exists()
+    assert f"Dry run: visual manifest {out_path}" in result.output
+    assert "status: would_create" in result.output
+    assert "target_scenes: 1" in result.output
+
+
+def test_visual_manifest_cli_conflict_output_mentions_overwrite(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    out_path = tmp_path / "generated" / "visual_manifest.md"
+    out_path.parent.mkdir(parents=True)
+    out_path.write_text("changed\n", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "visual-manifest",
+            str(props_json),
+            "--out",
+            str(out_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "--overwrite" in result.output
+    assert "Traceback" not in result.output
+
+
 def test_preflight_cli_warning_status_exits_zero_and_prints_stable_text(tmp_path) -> None:
     props_json = write_tiny_preflight_props(tmp_path)
 

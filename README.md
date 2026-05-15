@@ -117,6 +117,7 @@ See [docs/schemas.md](docs/schemas.md) for data shapes and [docs/matching.md](do
 - `generate-audio`: consume a narration manifest with provider `elevenlabs` to create section audio plus alignment; `ELEVENLABS_API_KEY` is read from the environment for real generation, while `--dry-run` needs no key and writes nothing.
 - `export-remotion`: export Remotion props from `timeline.json`.
 - `prepare-remotion-assets`: copy section audio into `remotion/public/audio/` and update props.
+- `visual-manifest`: create a local Markdown or JSON planning manifest for optional AI/B-roll visual assets; it does not download, generate, copy, or prepare media.
 - `prepare-visual-assets`: copy local AI/B-roll visual assets into `remotion/public/visuals/` and update props.
 - `inspect-visual-assets`: report AI/B-roll visual asset readiness from props.
 - `preflight`: report full-render readiness from props, optionally verifying public files.
@@ -157,7 +158,16 @@ Supported local visual extensions are `.mp4`, `.webm`, `.mov`, `.png`, `.jpg`, `
 
 Use exactly one supported file per target scene id. Local visual media is not bundled with the release and should not be committed.
 
-After exporting `remotion/props.json` and preparing audio, inspect, prepare, and verify visuals:
+After exporting `remotion/props.json`, generate a planning manifest when you need a human-readable asset brief or a JSON handoff for future B-roll tooling:
+
+```bash
+.venv/bin/synccut visual-manifest remotion/props.json --assets-dir assets/visuals --out generated/visual_manifest.md
+.venv/bin/synccut visual-manifest remotion/props.json --assets-dir assets/visuals --out generated/visual_manifest.json --format json
+```
+
+The manifest reports prepared props readiness separately from local `assets/visuals/` source-file availability. It is read-only: it does not download, generate, copy, or prepare media.
+
+After preparing audio, inspect, prepare, and verify visuals:
 
 ```bash
 .venv/bin/synccut inspect-visual-assets remotion/props.json

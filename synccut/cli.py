@@ -26,6 +26,11 @@ from synccut.visual_assets import (
     prepare_visual_assets_file,
     visual_asset_readiness_to_dict,
 )
+from synccut.visual_manifest import (
+    DEFAULT_ASSETS_DIR,
+    default_visual_manifest_out,
+    write_visual_manifest_file,
+)
 
 app = typer.Typer(help="Build structured video production timelines.")
 
@@ -326,6 +331,72 @@ def inspect_visual_assets_cmd(
         return
 
     typer.echo(format_visual_asset_readiness(summary), nl=False)
+
+
+@app.command("visual-manifest")
+def visual_manifest_cmd(
+    props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
+    assets_dir: Annotated[
+        Path,
+        typer.Option(
+            help="Directory containing local visual source files named <scene_id>.<ext>."
+        ),
+    ] = DEFAULT_ASSETS_DIR,
+    out: Annotated[
+        Path | None,
+        typer.Option(
+            "--out",
+            help="Path to write the visual manifest; defaults under generated/ by format.",
+        ),
+    ] = None,
+    output_format: Annotated[
+        str,
+        typer.Option("--format", help="Output format: markdown or json."),
+    ] = "markdown",
+    dry_run: Annotated[
+        bool, typer.Option("--dry-run", help="Report planned manifest output without writing.")
+    ] = False,
+    overwrite: Annotated[
+        bool, typer.Option("--overwrite", help="Replace a differing existing manifest output.")
+    ] = False,
+) -> None:
+    """Create a local visual asset planning manifest from Remotion props."""
+    try:
+        out_path = out if out is not None else default_visual_manifest_out(output_format)
+        result = write_visual_manifest_file(
+            props_json,
+            assets_dir=assets_dir,
+            out_path=out_path,
+            output_format=output_format,
+            dry_run=dry_run,
+            overwrite=overwrite,
+        )
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    summary = result.manifest.summary
+    if result.dry_run:
+        typer.echo(f"Dry run: visual manifest {result.out_path}")
+        typer.echo(f"status: {result.status}")
+    elif result.status == "reused":
+        typer.echo(f"Reused visual manifest {result.out_path}")
+    else:
+        typer.echo(f"Visual manifest {result.out_path}")
+
+    typer.echo(f"format: {result.output_format}")
+    typer.echo(f"target_scenes: {summary.target_scenes}")
+    typer.echo(f"prepared: {summary.prepared}")
+    typer.echo(f"missing: {summary.missing}")
+    typer.echo(f"unsupported: {summary.unsupported}")
+    typer.echo(f"local_found: {summary.local_found}")
+    typer.echo(f"local_missing: {summary.local_missing}")
+    typer.echo(f"local_duplicate_supported: {summary.local_duplicate_supported}")
+    typer.echo(f"local_unsupported_only: {summary.local_unsupported_only}")
+    typer.echo(
+        "Next: add visual files under assets/visuals/<scene_id>.<ext> "
+        "or use this manifest for B-roll planning"
+    )
 
 
 @app.command("preflight")
