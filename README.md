@@ -119,6 +119,7 @@ See [docs/schemas.md](docs/schemas.md) for data shapes and [docs/matching.md](do
 - `prepare-remotion-assets`: copy section audio into `remotion/public/audio/` and update props.
 - `visual-manifest`: create a local Markdown or JSON planning manifest for optional AI/B-roll visual assets; it does not download, generate, copy, or prepare media.
 - `download-broll`: consume a visual manifest JSON and download missing local B-roll assets with provider `pexels`; `--dry-run` needs no key and writes nothing, while real runs read `PEXELS_API_KEY` from the environment.
+- `inspect-visual-duration`: report local AI/B-roll duration and resolution readiness with `ffprobe` video metadata inspection only.
 - `prepare-visual-assets`: copy local AI/B-roll visual assets into `remotion/public/visuals/` and update props.
 - `inspect-visual-assets`: report AI/B-roll visual asset readiness from props.
 - `preflight`: report full-render readiness from props, optionally verifying public files.
@@ -175,6 +176,14 @@ To plan downloads for missing visual scenes, use the JSON manifest with `downloa
 ```
 
 `download-broll` does not mutate `remotion/props.json`, run `prepare-visual-assets`, probe media, or render.
+
+To inspect local visual duration and resolution readiness before preparing assets or rendering, run:
+
+```bash
+.venv/bin/synccut inspect-visual-duration remotion/props.json --assets-dir assets/visuals --out generated/visual_duration_report.md
+```
+
+`inspect-visual-duration` uses `ffprobe` for video metadata inspection only. It does not modify media, mutate props, prepare assets, or render. If `ffprobe` is missing, install FFmpeg tools or pass `--ffprobe-bin`; reports are written under ignored `generated/`.
 
 After preparing audio, inspect, prepare, and verify visuals:
 

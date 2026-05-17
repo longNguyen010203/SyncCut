@@ -1401,6 +1401,117 @@ def test_download_broll_cli_success_output_uses_orchestration_result(
     assert "Next: run visual-manifest again or prepare-visual-assets after review" in result.output
 
 
+def test_inspect_visual_duration_cli_markdown_success(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    assets_dir = tmp_path / "assets" / "visuals"
+    assets_dir.mkdir(parents=True)
+    (assets_dir / "scene_001.png").write_bytes(b"image")
+    out_path = tmp_path / "generated" / "visual_duration_report.md"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "inspect-visual-duration",
+            str(props_json),
+            "--assets-dir",
+            str(assets_dir),
+            "--out",
+            str(out_path),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert out_path.read_text(encoding="utf-8").startswith("# Visual Duration Report\n")
+    assert "Visual duration report" in result.output
+    assert "format: markdown" in result.output
+    assert "target_scenes: 1" in result.output
+    assert "images: 1" in result.output
+    assert "videos: 0" in result.output
+    assert "missing: 0" in result.output
+    assert "unreadable: 0" in result.output
+    assert f"report: {out_path}" in result.output
+    assert "Next: review warnings before prepare-visual-assets/render" in result.output
+
+
+def test_inspect_visual_duration_cli_json_success(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    assets_dir = tmp_path / "assets" / "visuals"
+    assets_dir.mkdir(parents=True)
+    (assets_dir / "scene_001.jpg").write_bytes(b"image")
+    out_path = tmp_path / "generated" / "visual_duration_report.json"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "inspect-visual-duration",
+            str(props_json),
+            "--assets-dir",
+            str(assets_dir),
+            "--out",
+            str(out_path),
+            "--format",
+            "json",
+        ],
+    )
+
+    output = json.loads(out_path.read_text(encoding="utf-8"))
+    assert result.exit_code == 0
+    assert output["schema_version"] == "0.1"
+    assert output["summary"]["target_scenes"] == 1
+    assert output["summary"]["image_ok"] == 1
+    assert output["scenes"][0]["status"] == "image_ok"
+    assert "format: json" in result.output
+
+
+def test_inspect_visual_duration_cli_conflict_mentions_overwrite(tmp_path) -> None:
+    props_json = write_tiny_visual_props(tmp_path)
+    out_path = tmp_path / "generated" / "visual_duration_report.md"
+    out_path.parent.mkdir(parents=True)
+    out_path.write_text("changed\n", encoding="utf-8")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "inspect-visual-duration",
+            str(props_json),
+            "--out",
+            str(out_path),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "--overwrite" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_inspect_visual_duration_cli_missing_ffprobe_mentions_option(tmp_path) -> None:
+    props_json = write_tiny_remotion_props(tmp_path, "audio/01_HOOK.mp3")
+    assets_dir = tmp_path / "assets" / "visuals"
+    assets_dir.mkdir(parents=True)
+    (assets_dir / "scene_001.mp4").write_bytes(b"video")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "inspect-visual-duration",
+            str(props_json),
+            "--assets-dir",
+            str(assets_dir),
+            "--out",
+            str(tmp_path / "generated" / "visual_duration_report.md"),
+            "--ffprobe-bin",
+            "syncut-definitely-missing-ffprobe",
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "ffprobe" in result.output
+    assert "--ffprobe-bin" in result.output
+    assert "Traceback" not in result.output
+
+
 def test_preflight_cli_warning_status_exits_zero_and_prints_stable_text(tmp_path) -> None:
     props_json = write_tiny_preflight_props(tmp_path)
 

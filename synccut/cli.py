@@ -35,6 +35,10 @@ from synccut.visual_manifest import (
     default_visual_manifest_out,
     write_visual_manifest_file,
 )
+from synccut.visual_duration import (
+    default_visual_duration_out,
+    write_visual_duration_report_file,
+)
 
 app = typer.Typer(help="Build structured video production timelines.")
 
@@ -477,6 +481,97 @@ def download_broll_cmd(
                 reason = scene.reason if scene.reason is not None else "unknown"
                 typer.echo(f"{scene.scene_id}: {reason}")
     typer.echo("Next: run visual-manifest again or prepare-visual-assets after review")
+
+
+@app.command("inspect-visual-duration")
+def inspect_visual_duration_cmd(
+    props_json: Annotated[Path, typer.Argument(help="Path to remotion/props.json.")],
+    assets_dir: Annotated[
+        Path,
+        typer.Option(help="Directory containing local visual source files."),
+    ] = DEFAULT_ASSETS_DIR,
+    out: Annotated[
+        Path | None,
+        typer.Option(
+            "--out",
+            help="Path to write the visual duration report; defaults under generated/ by format.",
+        ),
+    ] = None,
+    output_format: Annotated[
+        str,
+        typer.Option("--format", help="Output format: markdown or json."),
+    ] = "markdown",
+    overwrite: Annotated[
+        bool, typer.Option("--overwrite", help="Replace a differing existing report output.")
+    ] = False,
+    ffprobe_bin: Annotated[
+        str,
+        typer.Option("--ffprobe-bin", help="ffprobe executable used for video metadata."),
+    ] = "ffprobe",
+    ffprobe_timeout: Annotated[
+        int,
+        typer.Option("--ffprobe-timeout", help="Seconds before an ffprobe call times out."),
+    ] = 15,
+    max_loops_before_warning: Annotated[
+        float,
+        typer.Option(
+            "--max-loops-before-warning",
+            help="Warn as repetitive when a video loops more than this many times.",
+        ),
+    ] = 3,
+    min_duration_ratio: Annotated[
+        float,
+        typer.Option(
+            "--min-duration-ratio",
+            help="Warn as repetitive when asset duration divided by scene duration is below this.",
+        ),
+    ] = 0.4,
+    aspect_min: Annotated[
+        float,
+        typer.Option("--aspect-min", help="Minimum acceptable video aspect ratio."),
+    ] = 1.55,
+    aspect_max: Annotated[
+        float,
+        typer.Option("--aspect-max", help="Maximum acceptable video aspect ratio."),
+    ] = 1.90,
+) -> None:
+    """Report local visual asset duration and readiness from Remotion props."""
+    try:
+        out_path = out if out is not None else default_visual_duration_out(output_format)
+        result = write_visual_duration_report_file(
+            props_json,
+            assets_dir=assets_dir,
+            out_path=out_path,
+            output_format=output_format,
+            overwrite=overwrite,
+            ffprobe_bin=ffprobe_bin,
+            ffprobe_timeout_sec=ffprobe_timeout,
+            max_loops_before_warning=max_loops_before_warning,
+            min_duration_ratio=min_duration_ratio,
+            aspect_min=aspect_min,
+            aspect_max=aspect_max,
+        )
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    summary = result.report.summary
+    typer.echo("Visual duration report")
+    typer.echo(f"format: {result.output_format}")
+    typer.echo(f"target_scenes: {summary.target_scenes}")
+    typer.echo(f"images: {summary.images}")
+    typer.echo(f"videos: {summary.videos}")
+    typer.echo(f"missing: {summary.missing}")
+    typer.echo(f"unsupported: {summary.unsupported}")
+    typer.echo(f"duplicate_supported: {summary.duplicate_supported}")
+    typer.echo(f"unreadable: {summary.unreadable}")
+    typer.echo(f"video_ok: {summary.video_ok}")
+    typer.echo(f"video_short_loops: {summary.video_short_loops}")
+    typer.echo(f"video_very_short_repetitive: {summary.video_very_short_repetitive}")
+    typer.echo(f"video_long_trimmed: {summary.video_long_trimmed}")
+    typer.echo(f"aspect_ratio_warning: {summary.aspect_ratio_warning}")
+    typer.echo(f"report: {result.out_path}")
+    typer.echo("Next: review warnings before prepare-visual-assets/render")
 
 
 @app.command("preflight")
