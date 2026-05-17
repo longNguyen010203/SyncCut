@@ -118,6 +118,7 @@ See [docs/schemas.md](docs/schemas.md) for data shapes and [docs/matching.md](do
 - `export-remotion`: export Remotion props from `timeline.json`.
 - `prepare-remotion-assets`: copy section audio into `remotion/public/audio/` and update props.
 - `visual-manifest`: create a local Markdown or JSON planning manifest for optional AI/B-roll visual assets; it does not download, generate, copy, or prepare media.
+- `download-broll`: consume a visual manifest JSON and download missing local B-roll assets with provider `pexels`; `--dry-run` needs no key and writes nothing, while real runs read `PEXELS_API_KEY` from the environment.
 - `prepare-visual-assets`: copy local AI/B-roll visual assets into `remotion/public/visuals/` and update props.
 - `inspect-visual-assets`: report AI/B-roll visual asset readiness from props.
 - `preflight`: report full-render readiness from props, optionally verifying public files.
@@ -166,6 +167,14 @@ After exporting `remotion/props.json`, generate a planning manifest when you nee
 ```
 
 The manifest reports prepared props readiness separately from local `assets/visuals/` source-file availability. It is read-only: it does not download, generate, copy, or prepare media.
+
+To plan downloads for missing visual scenes, use the JSON manifest with `download-broll`. Pexels is the first implemented provider. Dry-run is safe and requires no API key; real runs require `PEXELS_API_KEY` and write local ignored files under `assets/visuals/` by default.
+
+```bash
+.venv/bin/synccut download-broll generated/visual_manifest.json --provider pexels --assets-dir assets/visuals --limit 1 --dry-run
+```
+
+`download-broll` does not mutate `remotion/props.json`, run `prepare-visual-assets`, probe media, or render.
 
 After preparing audio, inspect, prepare, and verify visuals:
 

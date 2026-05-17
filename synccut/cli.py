@@ -11,6 +11,10 @@ from synccut.audio_generation import (
     DEFAULT_OUTPUT_FORMAT,
     generate_audio_from_manifest,
 )
+from synccut.broll_downloader import (
+    DEFAULT_BROLL_METADATA_PATH,
+    download_broll_from_manifest,
+)
 from synccut.narration_package import prepare_narration_package
 from synccut.preflight import format_preflight, inspect_preflight_file, preflight_to_dict
 from synccut.remotion_assets import prepare_remotion_assets_file
@@ -397,6 +401,82 @@ def visual_manifest_cmd(
         "Next: add visual files under assets/visuals/<scene_id>.<ext> "
         "or use this manifest for B-roll planning"
     )
+
+
+@app.command("download-broll")
+def download_broll_cmd(
+    visual_manifest_json: Annotated[
+        Path, typer.Argument(help="Path to visual_manifest.json from visual-manifest.")
+    ],
+    provider: Annotated[str, typer.Option(help="B-roll provider name.")],
+    assets_dir: Annotated[
+        Path,
+        typer.Option(help="Directory to write local visual source files."),
+    ] = DEFAULT_ASSETS_DIR,
+    metadata_out: Annotated[
+        Path,
+        typer.Option("--metadata-out", help="Path to write downloader metadata."),
+    ] = DEFAULT_BROLL_METADATA_PATH,
+    dry_run: Annotated[
+        bool,
+        typer.Option("--dry-run", help="Report planned B-roll downloads without writing."),
+    ] = False,
+    overwrite: Annotated[
+        bool,
+        typer.Option("--overwrite", help="Replace the planned scene_id.mp4 output."),
+    ] = False,
+    limit: Annotated[
+        int | None,
+        typer.Option("--limit", help="Download only the first N eligible manifest scenes."),
+    ] = None,
+    scene_id: Annotated[
+        list[str] | None,
+        typer.Option("--scene-id", help="Download this scene id; repeatable."),
+    ] = None,
+) -> None:
+    """Download local B-roll assets from a visual manifest."""
+    try:
+        result = download_broll_from_manifest(
+            visual_manifest_json,
+            provider_name=provider,
+            assets_dir=assets_dir,
+            metadata_out=metadata_out,
+            dry_run=dry_run,
+            overwrite=overwrite,
+            limit=limit,
+            scene_ids=scene_id or [],
+        )
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    if result.dry_run:
+        typer.echo("Dry run: B-roll download")
+        typer.echo(f"provider: {result.provider}")
+        typer.echo(f"selected: {result.selected}")
+        typer.echo(f"would_download: {result.would_download}")
+        typer.echo(f"blocked: {result.blocked}")
+        typer.echo(f"skipped: {result.skipped}")
+        typer.echo(f"metadata_out: {result.metadata_path}")
+        typer.echo("No API key required for dry-run.")
+        return
+
+    typer.echo("B-roll download complete")
+    typer.echo(f"provider: {result.provider}")
+    typer.echo(f"selected: {result.selected}")
+    typer.echo(f"written: {result.written}")
+    typer.echo(f"reused: {result.reused}")
+    typer.echo(f"blocked: {result.blocked}")
+    typer.echo(f"skipped: {result.skipped}")
+    typer.echo(f"metadata_out: {result.metadata_path}")
+    if result.blocked:
+        typer.echo("")
+        typer.echo("Blocked:")
+        for scene in result.scenes:
+            if scene.status == "blocked":
+                reason = scene.reason if scene.reason is not None else "unknown"
+                typer.echo(f"{scene.scene_id}: {reason}")
+    typer.echo("Next: run visual-manifest again or prepare-visual-assets after review")
 
 
 @app.command("preflight")

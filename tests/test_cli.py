@@ -4,6 +4,7 @@ from pathlib import Path
 from typer.testing import CliRunner
 
 from synccut.audio_generation import AudioGenerationResult, AudioGenerationSectionResult
+from synccut.broll_downloader import BrollDownloadResult, BrollDownloadSceneResult
 from synccut.cli import app
 
 
@@ -277,6 +278,37 @@ def write_tiny_visual_props(root: Path) -> Path:
         encoding="utf-8",
     )
     return props_json
+
+
+def write_tiny_visual_manifest(root: Path) -> Path:
+    manifest_path = root / "generated" / "visual_manifest.json"
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(
+        json.dumps(
+            {
+                "schema_version": "0.1",
+                "metadata": {
+                    "generated_by": "synccut visual-manifest",
+                    "source_props": "remotion/props.json",
+                    "assets_dir": "assets/visuals",
+                    "format": "json",
+                },
+                "summary": {"target_scenes": 1},
+                "supported_extensions": [".mp4"],
+                "scenes": [
+                    {
+                        "scene_id": "scene_001",
+                        "visual_type": "AI_VIDEO",
+                        "prepared_status": "missing",
+                        "local_asset_status": "missing",
+                        "search_query_seed": "factory shot",
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    return manifest_path
 
 
 def write_tiny_preflight_props(root: Path) -> Path:
@@ -1218,6 +1250,155 @@ def test_visual_manifest_cli_conflict_output_mentions_overwrite(tmp_path) -> Non
     assert "Error:" in result.output
     assert "--overwrite" in result.output
     assert "Traceback" not in result.output
+
+
+def test_download_broll_cli_dry_run_output_writes_nothing(tmp_path) -> None:
+    manifest_path = write_tiny_visual_manifest(tmp_path)
+    assets_dir = tmp_path / "assets" / "visuals"
+    metadata_out = tmp_path / "generated" / "broll_download_manifest.json"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "download-broll",
+            str(manifest_path),
+            "--provider",
+            "pexels",
+            "--assets-dir",
+            str(assets_dir),
+            "--metadata-out",
+            str(metadata_out),
+            "--dry-run",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert not assets_dir.exists()
+    assert not metadata_out.exists()
+    assert "Dry run: B-roll download" in result.output
+    assert "provider: pexels" in result.output
+    assert "selected: 1" in result.output
+    assert "would_download: 1" in result.output
+    assert "No API key required for dry-run." in result.output
+
+
+def test_download_broll_cli_missing_pexels_key_mentions_env_var(
+    tmp_path, monkeypatch
+) -> None:
+    monkeypatch.delenv("PEXELS_API_KEY", raising=False)
+    manifest_path = write_tiny_visual_manifest(tmp_path)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "download-broll",
+            str(manifest_path),
+            "--provider",
+            "pexels",
+            "--assets-dir",
+            str(tmp_path / "assets" / "visuals"),
+        ],
+    )
+
+    assert result.exit_code == 1
+    assert "Error:" in result.output
+    assert "PEXELS_API_KEY" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_download_broll_cli_conflict_mentions_overwrite(tmp_path) -> None:
+    manifest_path = write_tiny_visual_manifest(tmp_path)
+    assets_dir = tmp_path / "assets" / "visuals"
+    assets_dir.mkdir(parents=True)
+    (assets_dir / "scene_001.mp4").write_bytes(b"existing")
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "download-broll",
+            str(manifest_path),
+            "--provider",
+            "pexels",
+            "--assets-dir",
+            str(assets_dir),
+            "--metadata-out",
+            str(tmp_path / "metadata.json"),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "B-roll download complete" in result.output
+    assert "blocked: 1" in result.output
+    assert "--overwrite" in result.output
+
+
+def test_download_broll_cli_success_output_uses_orchestration_result(
+    tmp_path, monkeypatch
+) -> None:
+    manifest_path = write_tiny_visual_manifest(tmp_path)
+    assets_dir = tmp_path / "assets" / "visuals"
+    metadata_path = tmp_path / "generated" / "broll_download_manifest.json"
+
+    def fake_download_broll_from_manifest(*_args, **_kwargs) -> BrollDownloadResult:
+        return BrollDownloadResult(
+            provider="pexels",
+            scenes=[
+                BrollDownloadSceneResult(
+                    scene_id="scene_001",
+                    status="written",
+                    reason=None,
+                    query="factory shot",
+                    provider="pexels",
+                    provider_asset_id="123",
+                    provider_asset_url="https://www.pexels.com/video/123/",
+                    creator_name="Creator",
+                    creator_url="https://www.pexels.com/@creator",
+                    download_url="https://videos.example/123.mp4",
+                    asset_path=assets_dir / "scene_001.mp4",
+                    file_type="video/mp4",
+                    width=1920,
+                    height=1080,
+                    provider_duration_sec=12,
+                    attribution="Video by Creator on Pexels",
+                )
+            ],
+            metadata_path=metadata_path,
+            dry_run=False,
+            selected=1,
+            written=1,
+            reused=0,
+            blocked=0,
+            skipped=0,
+        )
+
+    monkeypatch.setattr(
+        "synccut.cli.download_broll_from_manifest",
+        fake_download_broll_from_manifest,
+    )
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "download-broll",
+            str(manifest_path),
+            "--provider",
+            "pexels",
+            "--assets-dir",
+            str(assets_dir),
+            "--metadata-out",
+            str(metadata_path),
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "B-roll download complete" in result.output
+    assert "provider: pexels" in result.output
+    assert "selected: 1" in result.output
+    assert "written: 1" in result.output
+    assert "reused: 0" in result.output
+    assert "blocked: 0" in result.output
+    assert f"metadata_out: {metadata_path}" in result.output
+    assert "Next: run visual-manifest again or prepare-visual-assets after review" in result.output
 
 
 def test_preflight_cli_warning_status_exits_zero_and_prints_stable_text(tmp_path) -> None:
