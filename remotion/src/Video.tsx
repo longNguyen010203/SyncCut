@@ -1,5 +1,7 @@
 import {AbsoluteFill, Sequence} from "remotion";
+import {AnimatedBackground} from "./components/AnimatedBackground";
 import {SceneRenderer} from "./components/SceneRenderer";
+import {SceneShell} from "./components/SceneShell";
 import {SectionAudio} from "./components/SectionAudio";
 import type {SyncCutProps} from "./types";
 
@@ -13,6 +15,7 @@ export const Video = ({metadata, scenes, sections}: SyncCutProps) => {
           "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
       }}
     >
+      <AnimatedBackground />
       <SectionAudio sections={sections} />
       {scenes.map((scene) => (
         <Sequence
@@ -20,7 +23,9 @@ export const Video = ({metadata, scenes, sections}: SyncCutProps) => {
           from={scene.start_frame}
           durationInFrames={scene.duration_frames}
         >
-          <SceneRenderer scene={scene} sections={sections} />
+          <SceneShell scene={scene}>
+            <SceneRenderer scene={scene} sections={sections} />
+          </SceneShell>
         </Sequence>
       ))}
       <div

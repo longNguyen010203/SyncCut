@@ -1,4 +1,4 @@
-import {AbsoluteFill} from "remotion";
+import {AbsoluteFill, interpolate, useCurrentFrame} from "remotion";
 import type {CSSProperties} from "react";
 import type {JsonValue, SyncCutScene, SyncCutSection} from "../types";
 
@@ -88,6 +88,20 @@ export const PlaceholderScene = ({
   label,
   accentColor = "#38bdf8",
 }: PlaceholderSceneProps) => {
+  const frame = useCurrentFrame();
+  const durationFrames = Math.max(1, scene.duration_frames);
+  const transitionFrames = Math.max(
+    1,
+    Math.min(14, Math.max(5, Math.floor(durationFrames / 5))),
+  );
+  const panelOpacity = interpolate(frame, [0, transitionFrames], [0.72, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const panelTranslate = interpolate(frame, [0, transitionFrames], [16, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
   const prompt = scene.visual.prompt
     ? truncate(scene.visual.prompt, 320)
     : "No visual prompt";
@@ -105,9 +119,23 @@ export const PlaceholderScene = ({
         backgroundColor: "#111827",
         color: "#f8fafc",
         padding: 48,
+        overflow: "hidden",
       }}
     >
-      <div style={{...panelStyle, borderTop: `10px solid ${accentColor}`}}>
+      <div
+        style={{
+          ...backgroundAccentStyle,
+          borderColor: accentColor,
+        }}
+      />
+      <div
+        style={{
+          ...panelStyle,
+          borderTop: `10px solid ${accentColor}`,
+          opacity: panelOpacity,
+          transform: `translate3d(0, ${panelTranslate}px, 0)`,
+        }}
+      >
         <div style={{...eyebrowStyle, color: accentColor}}>{label}</div>
         <div style={titleStyle}>{scene.id}</div>
         <div
@@ -139,6 +167,19 @@ export const PlaceholderScene = ({
       </div>
     </AbsoluteFill>
   );
+};
+
+const backgroundAccentStyle: CSSProperties = {
+  position: "absolute",
+  inset: 64,
+  borderStyle: "solid",
+  borderWidth: 1,
+  borderRadius: 8,
+  background:
+    "radial-gradient(circle at 18% 12%, rgba(56, 189, 248, 0.12), transparent 34%), radial-gradient(circle at 88% 86%, rgba(168, 85, 247, 0.1), transparent 32%)",
+  boxShadow: "0 30px 110px rgba(2, 6, 23, 0.36)",
+  opacity: 0.48,
+  pointerEvents: "none",
 };
 
 const InfoBox = ({label, value}: {label: string; value: string}) => {

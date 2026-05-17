@@ -1,4 +1,4 @@
-import {AbsoluteFill} from "remotion";
+import {AbsoluteFill, interpolate, useCurrentFrame} from "remotion";
 import type {CSSProperties, ReactNode} from "react";
 import type {SyncCutScene, SyncCutSection} from "../types";
 
@@ -17,14 +17,22 @@ const frameStyle: CSSProperties = {
   fontFamily:
     "Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif",
   padding: 56,
+  overflow: "hidden",
 };
 
 const shellStyle: CSSProperties = {
+  position: "relative",
   width: "100%",
   height: "100%",
   display: "grid",
   gridTemplateRows: "auto minmax(0, 1fr) auto",
   gap: 28,
+  border: "1px solid rgba(248, 250, 252, 0.12)",
+  borderRadius: 8,
+  backgroundColor: "rgba(2, 6, 23, 0.36)",
+  boxShadow: "0 30px 120px rgba(2, 6, 23, 0.36)",
+  padding: 34,
+  overflow: "hidden",
 };
 
 const headerStyle: CSSProperties = {
@@ -87,13 +95,34 @@ export const DataSceneFrame = ({
   accentColor,
   children,
 }: DataSceneFrameProps) => {
+  const frame = useCurrentFrame();
+  const durationFrames = Math.max(1, scene.duration_frames);
+  const transitionFrames = Math.max(
+    1,
+    Math.min(14, Math.max(5, Math.floor(durationFrames / 5))),
+  );
+  const shellOpacity = interpolate(frame, [0, transitionFrames], [0.78, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const shellTranslate = interpolate(frame, [0, transitionFrames], [14, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
   const sectionLabel = section
     ? `${section.section_key} / ${section.section}`
     : scene.section_key;
 
   return (
     <AbsoluteFill style={frameStyle}>
-      <div style={shellStyle}>
+      <div style={backgroundAccentStyle} />
+      <div
+        style={{
+          ...shellStyle,
+          opacity: shellOpacity,
+          transform: `translate3d(0, ${shellTranslate}px, 0)`,
+        }}
+      >
         <header style={headerStyle}>
           <div>
             <div style={{...kickerStyle, color: accentColor}}>{kicker}</div>
@@ -112,4 +141,13 @@ export const DataSceneFrame = ({
       </div>
     </AbsoluteFill>
   );
+};
+
+const backgroundAccentStyle: CSSProperties = {
+  position: "absolute",
+  inset: 34,
+  borderRadius: 8,
+  background:
+    "radial-gradient(circle at 18% 16%, rgba(56, 189, 248, 0.11), transparent 36%), radial-gradient(circle at 84% 82%, rgba(168, 85, 247, 0.1), transparent 34%)",
+  pointerEvents: "none",
 };

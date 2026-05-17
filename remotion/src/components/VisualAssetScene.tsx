@@ -1,4 +1,4 @@
-import {AbsoluteFill, Img, Video, staticFile} from "remotion";
+import {AbsoluteFill, Img, Video, staticFile, useCurrentFrame} from "remotion";
 import type {CSSProperties} from "react";
 import type {SyncCutScene, SyncCutSection} from "../types";
 import {PlaceholderScene} from "./PlaceholderScene";
@@ -17,7 +17,12 @@ export const VisualAssetScene = ({
   placeholderLabel: string;
   accentColor: string;
 }) => {
+  const frame = useCurrentFrame();
   const asset = getPreparedVisualAsset(scene.visual.public_path);
+  const phase = scene.scene_order * 0.41;
+  const mediaScale = 1.014 + Math.sin(frame / 150 + phase) * 0.008;
+  const translateX = Math.sin(frame / 180 + phase) * 7;
+  const translateY = Math.cos(frame / 210 + phase) * 5;
 
   if (asset === null) {
     return (
@@ -32,7 +37,12 @@ export const VisualAssetScene = ({
 
   return (
     <AbsoluteFill style={styles.frame}>
-      <AbsoluteFill style={styles.mediaLayer}>
+      <AbsoluteFill
+        style={{
+          ...styles.mediaLayer,
+          transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${mediaScale})`,
+        }}
+      >
         {asset.kind === "image" ? (
           <Img src={staticFile(asset.publicPath)} style={styles.media} />
         ) : (
@@ -44,6 +54,7 @@ export const VisualAssetScene = ({
           />
         )}
       </AbsoluteFill>
+      <div style={{...styles.edgeGlow, borderColor: accentColor}} />
       <div style={{...styles.tint, borderColor: accentColor}} />
       <div style={styles.header}>
         <div style={{...styles.kicker, color: accentColor}}>{assetLabel}</div>
@@ -68,11 +79,23 @@ const styles: Record<string, CSSProperties> = {
   },
   mediaLayer: {
     backgroundColor: "#020617",
+    transformOrigin: "50% 50%",
   },
   media: {
     width: "100%",
     height: "100%",
     objectFit: "cover",
+  },
+  edgeGlow: {
+    position: "absolute",
+    inset: 34,
+    borderStyle: "solid",
+    borderWidth: 1,
+    borderRadius: 8,
+    boxShadow:
+      "0 28px 110px rgba(2, 6, 23, 0.48), inset 0 0 80px rgba(248, 250, 252, 0.045)",
+    opacity: 0.5,
+    pointerEvents: "none",
   },
   tint: {
     position: "absolute",
@@ -80,7 +103,7 @@ const styles: Record<string, CSSProperties> = {
     borderStyle: "solid",
     borderWidth: 12,
     background:
-      "linear-gradient(180deg, rgba(2, 6, 23, 0.72) 0%, rgba(2, 6, 23, 0.12) 42%, rgba(2, 6, 23, 0.78) 100%)",
+      "linear-gradient(180deg, rgba(2, 6, 23, 0.64) 0%, rgba(2, 6, 23, 0.1) 42%, rgba(2, 6, 23, 0.78) 100%)",
     pointerEvents: "none",
   },
   header: {
