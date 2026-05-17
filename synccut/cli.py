@@ -16,6 +16,7 @@ from synccut.broll_downloader import (
     download_broll_from_manifest,
 )
 from synccut.narration_package import prepare_narration_package
+from synccut.pipeline import format_pipeline_summary, run_pipeline_check
 from synccut.preflight import format_preflight, inspect_preflight_file, preflight_to_dict
 from synccut.remotion_assets import prepare_remotion_assets_file
 from synccut.remotion_exporter import export_remotion_props_file
@@ -620,6 +621,76 @@ def preflight_cmd(
 
     if summary.status == "error":
         raise typer.Exit(1)
+
+
+@app.command("pipeline-check")
+def pipeline_check_cmd(
+    scenes_json: Annotated[Path, typer.Argument(help="Path to scenes.json.")],
+    audio_dir: Annotated[Path, typer.Option(help="Directory containing section audio files.")],
+    alignment_dir: Annotated[
+        Path, typer.Option(help="Directory containing section alignment JSON files.")
+    ],
+    visual_assets_dir: Annotated[
+        Path,
+        typer.Option(
+            "--visual-assets-dir",
+            help="Directory containing optional local visual files named <scene_id>.<ext>.",
+        ),
+    ] = DEFAULT_ASSETS_DIR,
+    timeline_out: Annotated[
+        Path, typer.Option("--timeline-out", help="Path to write generated timeline JSON.")
+    ] = Path("timeline.json"),
+    props_out: Annotated[
+        Path, typer.Option("--props-out", help="Path to write generated Remotion props JSON.")
+    ] = Path("remotion/props.json"),
+    public_dir: Annotated[
+        Path, typer.Option("--public-dir", help="Remotion public directory for prepared assets.")
+    ] = Path("remotion/public"),
+    generated_dir: Annotated[
+        Path, typer.Option("--generated-dir", help="Directory for generated pipeline reports.")
+    ] = Path("generated"),
+    skip_visual_duration: Annotated[
+        bool,
+        typer.Option(
+            "--skip-visual-duration/--no-skip-visual-duration",
+            help="Skip ffprobe-based visual duration reporting.",
+        ),
+    ] = False,
+    overwrite_reports: Annotated[
+        bool,
+        typer.Option(
+            "--overwrite-reports/--no-overwrite-reports",
+            help="Replace deterministic generated pipeline report files.",
+        ),
+    ] = True,
+    prepare_visual_assets: Annotated[
+        bool,
+        typer.Option(
+            "--prepare-visual-assets/--no-prepare-visual-assets",
+            help="Copy local visual assets into Remotion public and update props.",
+        ),
+    ] = True,
+) -> None:
+    """Run the local deterministic readiness pipeline without providers or rendering."""
+    try:
+        result = run_pipeline_check(
+            scenes_json,
+            audio_dir=audio_dir,
+            alignment_dir=alignment_dir,
+            visual_assets_dir=visual_assets_dir,
+            timeline_out=timeline_out,
+            props_out=props_out,
+            public_dir=public_dir,
+            generated_dir=generated_dir,
+            skip_visual_duration=skip_visual_duration,
+            overwrite_reports=overwrite_reports,
+            prepare_visual_assets=prepare_visual_assets,
+        )
+    except SyncCutError as exc:
+        typer.echo(f"Error: {exc}", err=True)
+        raise typer.Exit(1) from exc
+
+    typer.echo(format_pipeline_summary(result), nl=False)
 
 
 if __name__ == "__main__":

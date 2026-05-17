@@ -96,6 +96,106 @@ Key generated artifacts:
 - `remotion/out/*`: Remotion still, smoke, segment, and final render outputs.
 - Caches: Python, pytest, Node, and Remotion tooling caches created while developing or rendering.
 
+## From scenes.json to final video
+
+Before running the full workflow, make sure the Python environment is installed, Remotion dependencies are installed under `remotion/`, and prepared audio/alignment inputs are available. If audio and alignment do not exist yet, run the optional narration/audio workflow first. Local visual assets under `assets/visuals/` are optional unless you want local AI/B-roll visuals instead of placeholders. `ffprobe` from FFmpeg tools is required only for visual duration reporting.
+
+### Option A: pipeline-check workflow
+
+For the sample project, run:
+
+```bash
+.venv/bin/synccut pipeline-check examples/scenes.json \
+  --audio-dir examples/audio \
+  --alignment-dir examples/alignments \
+  --visual-assets-dir assets/visuals
+```
+
+`pipeline-check` builds `timeline.json`, validates it, exports `remotion/props.json`, prepares audio into `remotion/public/audio/`, writes `generated/visual_manifest.md` and `generated/visual_manifest.json`, writes `generated/visual_duration_report.md` when `ffprobe` is available, prepares local visual assets into `remotion/public/visuals/`, inspects visual readiness, runs verified preflight, and writes `generated/pipeline_check_report.json`.
+
+The command does not call provider APIs, download B-roll, render video, or transform media.
+
+### Option B: manual workflow
+
+Run the same steps manually when you want to inspect or debug each stage:
+
+```bash
+.venv/bin/synccut build-timeline examples/scenes.json \
+  --audio-dir examples/audio \
+  --alignment-dir examples/alignments \
+  --out timeline.json
+
+.venv/bin/synccut validate-timeline timeline.json
+
+.venv/bin/synccut export-remotion timeline.json \
+  --out remotion/props.json
+
+.venv/bin/synccut prepare-remotion-assets remotion/props.json \
+  --out-dir remotion/public
+
+.venv/bin/synccut visual-manifest remotion/props.json \
+  --assets-dir assets/visuals \
+  --out generated/visual_manifest.md
+
+.venv/bin/synccut visual-manifest remotion/props.json \
+  --assets-dir assets/visuals \
+  --out generated/visual_manifest.json \
+  --format json
+
+.venv/bin/synccut inspect-visual-duration remotion/props.json \
+  --assets-dir assets/visuals \
+  --out generated/visual_duration_report.md \
+  --overwrite
+
+.venv/bin/synccut prepare-visual-assets remotion/props.json \
+  --assets-dir assets/visuals \
+  --out-dir remotion/public
+
+.venv/bin/synccut inspect-visual-assets remotion/props.json
+
+.venv/bin/synccut preflight remotion/props.json \
+  --verify-files \
+  --public-dir remotion/public
+```
+
+### Optional generated audio/alignment
+
+`prepare-narration` creates a local narration manifest/text package from `scenes.json`. `generate-audio` can then consume that package with a provider such as `elevenlabs` to produce section audio plus alignment. Real provider use requires environment API keys and is not run by `pipeline-check` by default.
+
+### Optional B-roll download
+
+`visual-manifest` JSON can feed `download-broll`. Dry-run first; real Pexels downloads require `PEXELS_API_KEY` and remain explicit.
+
+```bash
+.venv/bin/synccut download-broll generated/visual_manifest.json \
+  --provider pexels \
+  --assets-dir assets/visuals \
+  --dry-run
+```
+
+### Remotion typecheck and render
+
+After preflight, run Remotion commands manually from `remotion/`:
+
+```bash
+cd remotion
+npm run typecheck
+npm run render:smoke:local
+npm run render:final:local
+cd ..
+```
+
+The Python CLI does not render video by default. Render outputs go under ignored `remotion/out/`.
+
+### Runbook artifacts and troubleshooting
+
+Generated reports live under ignored `generated/`. `timeline.json`, `remotion/public/`, `remotion/out/`, and `assets/visuals/` are local generated or media paths. `remotion/props.json` is generated sample state; restore it after local validation unless you intentionally changed the sample.
+
+- If `ffprobe` is missing, install FFmpeg tools or run the standalone `inspect-visual-duration` command later with `--ffprobe-bin`.
+- If preflight reports file errors, rerun `prepare-remotion-assets` and `prepare-visual-assets`.
+- If provider/API errors occur, run provider commands explicitly; `pipeline-check` does not call providers.
+- If Remotion typecheck or render fails, run those commands from inside `remotion/`.
+
 ## v0.1.0 Release Evidence
 
 The v0.1.0 release was validated with the TSMC sample after timing and visual-duration polish. The post-polish final render completed `22584/22584` frames to `remotion/out/final.mp4`, and human re-review accepted the previous conclusion timing gap and short-video duration issues as resolved. The release decision recorded in docs is `release-ready-with-known-warnings`.
@@ -123,6 +223,7 @@ See [docs/schemas.md](docs/schemas.md) for data shapes and [docs/matching.md](do
 - `prepare-visual-assets`: copy local AI/B-roll visual assets into `remotion/public/visuals/` and update props.
 - `inspect-visual-assets`: report AI/B-roll visual asset readiness from props.
 - `preflight`: report full-render readiness from props, optionally verifying public files.
+- `pipeline-check`: run the local deterministic pipeline from scenes/audio/alignment through reports, asset preparation, visual readiness, and verified preflight; it does not call providers, download media, or render.
 
 Run `.venv/bin/synccut --help` or `.venv/bin/synccut <command> --help` for exact options.
 

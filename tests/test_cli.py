@@ -1757,3 +1757,81 @@ def test_preflight_cli_verify_files_read_only(tmp_path) -> None:
 
     assert result.exit_code == 0
     assert props_json.read_text(encoding="utf-8") == original
+
+
+def test_pipeline_check_cli_runs_and_prints_summary(tmp_path) -> None:
+    scenes_json, audio_dir, alignment_dir = write_tiny_fixture(tmp_path)
+    generated_dir = tmp_path / "generated"
+    props_out = tmp_path / "remotion" / "props.json"
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "pipeline-check",
+            str(scenes_json),
+            "--audio-dir",
+            str(audio_dir),
+            "--alignment-dir",
+            str(alignment_dir),
+            "--visual-assets-dir",
+            str(tmp_path / "assets" / "visuals"),
+            "--timeline-out",
+            str(tmp_path / "timeline.json"),
+            "--props-out",
+            str(props_out),
+            "--public-dir",
+            str(tmp_path / "remotion" / "public"),
+            "--generated-dir",
+            str(generated_dir),
+            "--skip-visual-duration",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "Pipeline check" in result.output
+    assert "PASS build_timeline" in result.output
+    assert "SKIP inspect_visual_duration" in result.output
+    assert "Pipeline check complete" in result.output
+    assert "report:" in result.output
+    assert "Next: cd remotion && npm run typecheck" in result.output
+    assert (generated_dir / "pipeline_check_report.json").exists()
+    assert props_out.exists()
+
+
+def test_pipeline_check_cli_no_prepare_visual_assets_keeps_warning_only_pipeline(tmp_path) -> None:
+    scenes_json, audio_dir, alignment_dir = write_tiny_fixture(tmp_path)
+
+    result = CliRunner().invoke(
+        app,
+        [
+            "pipeline-check",
+            str(scenes_json),
+            "--audio-dir",
+            str(audio_dir),
+            "--alignment-dir",
+            str(alignment_dir),
+            "--timeline-out",
+            str(tmp_path / "timeline.json"),
+            "--props-out",
+            str(tmp_path / "remotion" / "props.json"),
+            "--public-dir",
+            str(tmp_path / "missing-public-parent" / "public"),
+            "--generated-dir",
+            str(tmp_path / "generated"),
+            "--skip-visual-duration",
+            "--no-prepare-visual-assets",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "Pipeline check complete" in result.output
+
+
+def test_pipeline_check_help_exposes_safe_options() -> None:
+    result = CliRunner().invoke(app, ["pipeline-check", "--help"])
+
+    assert result.exit_code == 0
+    assert "--skip-visual" in result.output
+    assert "--prepare-visual" in result.output
+    assert "--generated-dir" in result.output
+    assert "without providers or rendering" in result.output
