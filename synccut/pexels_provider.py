@@ -34,6 +34,7 @@ class PexelsVideoClient:
             headers={
                 "Accept": "application/json",
                 "Authorization": self._api_key,
+                "User-Agent": "SyncCut/0.1",
             },
         )
         raw = self._read_json(request, label="Pexels video search")
@@ -51,7 +52,10 @@ class PexelsVideoClient:
         request = urllib.request.Request(
             candidate.download_url,
             method="GET",
-            headers={"Accept": candidate.file_type or "application/octet-stream"},
+            headers={
+                "Accept": candidate.file_type or "application/octet-stream",
+                "User-Agent": "SyncCut/0.1",
+            },
         )
         try:
             with urllib.request.urlopen(request, timeout=self._timeout_sec) as response:
